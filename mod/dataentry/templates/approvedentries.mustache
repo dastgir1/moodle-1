@@ -1,0 +1,64 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_dataentry/approvedentries
+
+    TODO describe template approvedentries
+
+    Example context (json):
+    {
+    }
+}}
+<nav aria-label="breadcrumb" class="mb-5" id="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a class="text-decoration-none" href="/mod/dataentry/view.php?id={{id}}">{{#str}}entrypage,dataentry{{/str}}</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{#str}}approvedentries,dataentry{{/str}} </li>
+  </ol>
+</nav>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                 <h3 class="text-center">{{#str}}approvedentries,dataentry{{/str}} </h3>
+                 <input type="search" id="search" placeholder="Search Here..." class="border rounded p-2"/>
+                 <a href="/mod/dataentry/export_csv.php?id={{id}}"><button type="submit" class="btn btn-primary rounded  " style="float:right;">Export to csv </button></a>
+                </div>
+                <div class="card-body">
+                    <table class="table table-strapped" >
+                     <tr>
+                        <th>{{#str}}userid,dataentry{{/str}}</th>
+                        <th>{{#str}}username,dataentry{{/str}}</th>
+                      
+                        <th>{{#str}}totaltime,dataentry{{/str}}</th>
+                    </tr>
+                    <tbody id="datatable">
+                        {{#approvedata}}
+                            <tr>
+                                <td>{{userid}}</td>
+                                <td>{{username}}</td>
+                              
+                                <td>{{totaltime}}</td>
+                            </tr>
+                        {{/approvedata}}
+                    </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

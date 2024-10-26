@@ -1,0 +1,91 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_about/about
+
+    TODO describe template about
+
+    Example context (json):
+    {
+    }
+}}
+<!-- Header Start -->
+<div class="container-fluid bg-primary py-5 mb-5 page-header" id="aboutus">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+       
+            <div class="col-lg-10 text-center">
+                <h1 class="display-3 text-white animated slideInDown">{{#str}}aboutus{{/str}}</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb justify-content-center">
+                        <li class="breadcrumb-item"><a class="text-white" href="{{{config.wwwroot}}}/?redirect=0">{{#str}}home{{/str}}</a></li>
+                       
+                        <li class="breadcrumb-item text-white active" aria-current="page">{{#str}}aboutus{{/str}}</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+         
+    </div>
+</div>
+<!-- Header End -->
+
+<!-- About Start -->
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s" style="min-height: 400px;">
+                <div class="position-relative h-100">
+                    <img class="img-fluid position-absolute w-100 h-100 animated slideInDown" src="{{{config.wwwroot}}}/local/aboutus/img/about.jpg" alt="" style="object-fit: cover;">
+                </div>
+            </div>
+             {{# strings}}
+            <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.3s">
+                <h1 class="section-title bg-white text-start text-primary animated slideInDown pe-3 py-3">{{aboutus}}</h1>
+                <h2 class="pb-2 animated slideInDown">
+                   {{h2}}
+                </h2>
+                <p class="pb-2 animated slideInDown">
+                   {{p1}}
+                </p>
+                <p class="pb-2 animated slideInDown">
+                   {{p2}}
+                </p>
+                <p class="pb-2 animated slideInDown">{{p3}}</p>
+                <p class="pb-2 animated slideInDown"> <strong> {{p4}}</strong></p>
+                
+                <p class="pb-2 animated slideInDown">{{p5}}</p>
+                <div class="row gy-2 gx-4 mb-4">
+                    <div class="col-sm-6 animated slideInDown">
+                        <p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>{{p6}}</p>
+                    </div>
+                    <div class="col-sm-6 animated slideInDown">
+                        <p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>{{p7}}</p>
+                    </div>
+                    <div class="col-sm-6 animated slideInDown">
+                        <p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>{{p8}}</p>
+                    </div>
+                    <div class="col-sm-6 animated slideInDown">
+                        <p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>{{p9}}</p>
+                    </div>                    
+                </div>               
+            </div>
+             {{/ strings}}
+        </div>
+    </div>
+</div>
+<!-- About End -->
