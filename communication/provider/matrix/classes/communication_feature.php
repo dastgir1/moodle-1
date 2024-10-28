@@ -190,6 +190,24 @@ class communication_feature implements
     }
 
     public function update_room_membership(array $userids): void {
+
+        // Filter out any users that are not room members yet.
+        $response = $this->matrixapi->get_room_members(
+            roomid: $this->get_room_id(),
+        );
+        $body = self::get_body($response);
+
+        if (isset($body->joined)) {
+            foreach ($userids as $key => $userid) {
+                $matrixuserid = matrix_user_manager::get_matrixid_from_moodle(
+                    userid: $userid,
+                );
+                if (!array_key_exists($matrixuserid, (array) $body->joined)) {
+                    unset($userids[$key]);
+                }
+            }
+        }
+
         $this->set_matrix_power_levels();
         // Mark the users as synced for the updated members.
         $this->processor->mark_users_as_synced($userids);
@@ -610,8 +628,9 @@ class communication_feature implements
         if (!empty($forceremoval)) {
             // Remove the users from the power levels if they are not admins.
             foreach ($forceremoval as $userid) {
-                if ($newuserpowerlevels < matrix_constants::POWER_LEVEL_MAXIMUM) {
-                    unset($newuserpowerlevels[$userid]);
+                $muid = matrix_user_manager::get_matrixid_from_moodle($userid);
+                if (isset($newuserpowerlevels[$muid]) && $newuserpowerlevels[$muid] < matrix_constants::POWER_LEVEL_MAXIMUM) {
+                    unset($newuserpowerlevels[$muid]);
                 }
             }
         }
@@ -620,7 +639,6 @@ class communication_feature implements
             // No changes to make.
             return;
         }
-
 
         // Update the power levels for the room.
         $this->matrixapi->update_room_power_levels(
@@ -703,14 +721,7 @@ class communication_feature implements
             );
         }
 
-        $powerdata = $this->get_body($response);
-        $powerdata = array_filter(
-            $powerdata->rooms->join->{$roomid}->state->events,
-            fn($value) => $value->type === 'm.room.power_levels'
-        );
-        $powerdata = reset($powerdata);
-
-        return $powerdata->content;
+        return $this->get_body($response);
     }
 
     /**

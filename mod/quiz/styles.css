@@ -582,7 +582,6 @@ table.quizreviewsummary td.cell {
 }
 
 #page-mod-quiz-edit .section-heading .instancesectioncontainer {
-    font-size: 24px;
     display: inline;
 }
 
@@ -753,19 +752,12 @@ table.quizreviewsummary td.cell {
 
 #page-mod-quiz-edit ul.slots li.section li.activity .question_dependency_wrapper {
     position: absolute;
-    top: 0;
-    right: 0;
+    top: -1em;
+    right: -20px;
 }
 
 #page-mod-quiz-edit ul.slots li.section li.activity .question_dependency_wrapper.question_dependency_cannot_depend {
     display: none;
-}
-
-#page-mod-quiz-edit ul.slots li.section li.activity .question_dependency_wrapper .currentlink,
-#page-mod-quiz-edit ul.slots li.section li.activity .question_dependency_wrapper .cm-edit-action {
-    position: relative;
-    left: 20px;
-    top: -1em;
 }
 
 #page-mod-quiz-edit ul.slots li.section li.activity .activityinstance {
@@ -790,9 +782,9 @@ table.quizreviewsummary td.cell {
 
 #page-mod-quiz-edit ul.slots .activityinstance span.instancename {
     overflow-x: hidden;
+    overflow-y: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    overflow: hidden;
     display: inline-block;
     height: 20px;
 }
@@ -846,7 +838,7 @@ table.quizreviewsummary td.cell {
 }
 
 #page-mod-quiz-edit .question-bank-table {
-    width: auto;
+    width: 100%;
 }
 
 #page-mod-quiz-edit .question-bank-table .header {
@@ -920,6 +912,7 @@ table.quizreviewsummary td.cell {
 
 #page-mod-quiz-edit .question-bank-table .questionnametext {
     padding: 0 0.2em;
+    width: 100% !important; /* stylelint-disable-line declaration-no-important */
 }
 
 #page-mod-quiz-edit .question-bank-table .questiontext {
@@ -946,6 +939,12 @@ table.quizreviewsummary td.cell {
 #page-mod-quiz-edit table.question-bank-table th {
     overflow: hidden;
     white-space: nowrap;
+    width: 1.2em !important; /* stylelint-disable-line declaration-no-important */
+}
+
+#page-mod-quiz-edit table.question-bank-table td.questionnametext > div {
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .mod_quiz_qbank_dialogue {

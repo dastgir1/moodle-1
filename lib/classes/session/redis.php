@@ -53,6 +53,15 @@ class redis extends handler {
      */
     const COMPRESSION_ZSTD      = 'zstd';
 
+    /**
+     * Minimum version of the Redis extension required.
+     */
+    public const REDIS_EXTENSION_MIN_VERSION = '2.2.4';
+    /**
+     * Minimum version of the Redis extension required.
+     */
+    private const REDIS_SERVER_MIN_VERSION = '2.6.12';
+
     /** @var string $host save_path string  */
     protected $host = '';
     /** @var int $port The port to connect to */
@@ -92,6 +101,9 @@ class redis extends handler {
 
     /** @var int $timeout How long sessions live before expiring. */
     protected $timeout;
+
+    /** @var int The number of seconds to wait for a connection or response from the Redis server. */
+    const CONNECTION_TIMEOUT = 10;
 
     /**
      * Create new instance of handler.
@@ -147,12 +159,15 @@ class redis extends handler {
         $this->timeout = $CFG->sessiontimeout + $updatefreq + MINSECS;
 
         // This sets the Redis session lock expiry time to whatever is lower, either
-        // the PHP execution time `max_execution_time`, if the value was defined in
-        // the `php.ini` or the globally configured `sessiontimeout`. Setting it to
-        // the lower of the two will not make things worse it if the execution timeout
+        // the PHP execution time `max_execution_time`, if the value is positive, or the
+        // globally configured `sessiontimeout`.
+        //
+        // Setting it to the lower of the two will not make things worse it if the execution timeout
         // is longer than the session timeout.
+        //
         // For the PHP execution time, once the PHP execution time is over, we can be sure
         // that the lock is no longer actively held so that the lock can expire safely.
+        //
         // Although at `lib/classes/php_time_limit.php::raise(int)`, Moodle can
         // progressively increase the maximum PHP execution time, this is limited to the
         // `max_execution_time` value defined in the `php.ini`.
@@ -160,9 +175,19 @@ class redis extends handler {
         // once the session itself expires.
         // If we unnecessarily hold the lock any longer, it blocks other session requests.
         $this->lockexpire = ini_get('max_execution_time');
+        if ($this->lockexpire < 0) {
+            // If the max_execution_time is set to a value lower than 0, which is invalid, use the default value.
+            // https://www.php.net/manual/en/info.configuration.php#ini.max-execution-time defines the default as 30.
+            // Note: This value is not available programatically.
+            $this->lockexpire = 30;
+        }
+
         if (empty($this->lockexpire) || ($this->lockexpire > (int)$CFG->sessiontimeout)) {
+            // The value of the max_execution_time is either unlimited (0), or higher than the session timeout.
+            // Cap it at the session timeout.
             $this->lockexpire = (int)$CFG->sessiontimeout;
         }
+
         if (isset($CFG->session_redis_lock_expire)) {
             $this->lockexpire = (int)$CFG->session_redis_lock_expire;
         }
@@ -193,13 +218,14 @@ class redis extends handler {
 
         if (empty($this->host)) {
             throw new exception('sessionhandlerproblem', 'error', '', null,
-                    '$CFG->session_redis_host must be specified in config.php');
+                '$CFG->session_redis_host must be specified in config.php');
         }
 
-        // The session handler requires a version of Redis with the SETEX command (at least 2.0).
+        // The session handler requires a version of PHP Redis extension with support for SET command options (at least 2.2.4).
         $version = phpversion('Redis');
-        if (!$version or version_compare($version, '2.0') <= 0) {
-            throw new exception('sessionhandlerproblem', 'error', '', null, 'redis extension version must be at least 2.0');
+        if (!$version || version_compare($version, self::REDIS_EXTENSION_MIN_VERSION) <= 0) {
+            throw new exception('sessionhandlerproblem', 'error', '', null,
+                'redis extension version must be at least ' . self::REDIS_EXTENSION_MIN_VERSION);
         }
 
         $this->connection = new \Redis();
@@ -229,8 +255,16 @@ class redis extends handler {
 
                 $delay = rand(100, 500);
 
-                // One second timeout was chosen as it is long for connection, but short enough for a user to be patient.
-                if (!$this->connection->connect($this->host, $this->port, 1, null, $delay, 1, $opts)) {
+                $connection = $this->connection->connect(
+                    $this->host,
+                    $this->port,
+                    self::CONNECTION_TIMEOUT, // Timeout.
+                    null,
+                    $delay, // Retry interval.
+                    self::CONNECTION_TIMEOUT, // Read timeout.
+                    $opts,
+                );
+                if (!$connection) {
                     throw new RedisException('Unable to connect to host.');
                 }
 
@@ -264,6 +298,13 @@ class redis extends handler {
                     if (!$this->connection->select($this->database)) {
                         throw new RedisException('Unable to select Redis database '.$this->database.'.');
                     }
+                }
+
+                // The session handler requires a version of Redis server with support for SET command options (at least 2.6.12).
+                $serverversion = $this->connection->info('server')['redis_version'];
+                if (version_compare($serverversion, self::REDIS_SERVER_MIN_VERSION) <= 0) {
+                    throw new exception('sessionhandlerproblem', 'error', '', null,
+                        'redis server version must be at least ' . self::REDIS_SERVER_MIN_VERSION);
                 }
                 return true;
             } catch (RedisException $e) {
@@ -507,12 +548,10 @@ class redis extends handler {
         $haswarned = false; // Have we logged a lock warning?
 
         while (!$haslock) {
-
-            $haslock = $this->connection->setnx($lockkey, $whoami);
+            $haslock = $this->connection->set($lockkey, $whoami, ['nx', 'ex' => $this->lockexpire]);
 
             if ($haslock) {
                 $this->locks[$id] = $this->time() + $this->lockexpire;
-                $this->connection->expire($lockkey, $this->lockexpire);
                 return true;
             }
 

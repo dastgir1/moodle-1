@@ -3682,5 +3682,100 @@ privatefiles,moodle|/user/files.php';
     // Automatically generated Moodle v4.3.0 release upgrade line.
     // Put any upgrade step following this.
 
+
+    if ($oldversion < 2023100902.01) {
+        $sqllike = $DB->sql_like('filtercondition', '?');
+        $params[] = '%includesubcategories%';
+
+        $sql = "SELECT qsr.* FROM {question_set_references} qsr WHERE $sqllike";
+        $results = $DB->get_recordset_sql($sql, $params);
+        foreach ($results as $result) {
+            $filtercondition = json_decode($result->filtercondition);
+            if (isset($filtercondition->filter->category->includesubcategories)) {
+                $filtercondition->filter->category->filteroptions =
+                    ['includesubcategories' => $filtercondition->filter->category->includesubcategories];
+                unset($filtercondition->filter->category->includesubcategories);
+                $result->filtercondition = json_encode($filtercondition);
+                $DB->update_record('question_set_references', $result);
+            }
+        }
+        $results->close();
+
+        upgrade_main_savepoint(true, 2023100902.01);
+    }
+
+    if ($oldversion < 2023100902.07) {
+        // If h5plib_v124 is no longer present, remove it.
+        if (!file_exists($CFG->dirroot . '/h5p/h5plib/v124/version.php')) {
+            // Clean config.
+            uninstall_plugin('h5plib', 'v124');
+        }
+
+        // If h5plib_v126 is present, set it as the default one.
+        if (file_exists($CFG->dirroot . '/h5p/h5plib/v126/version.php')) {
+            set_config('h5plibraryhandler', 'h5plib_v126');
+        }
+
+        upgrade_main_savepoint(true, 2023100902.07);
+    }
+
+    if ($oldversion < 2023100903.05) {
+
+        // Get all "select" custom field shortnames.
+        $fieldshortnames = $DB->get_fieldset_select('customfield_field', 'shortname', 'type = :type', ['type' => 'select']);
+
+        // Ensure any used in custom reports columns are not using integer type aggregation.
+        foreach ($fieldshortnames as $fieldshortname) {
+            $DB->execute("
+                UPDATE {reportbuilder_column}
+                   SET aggregation = NULL
+                 WHERE " . $DB->sql_like('uniqueidentifier', ':uniqueidentifier', false) . "
+                   AND aggregation IN ('avg', 'max', 'min', 'sum')
+            ", [
+                'uniqueidentifier' => '%' . $DB->sql_like_escape(":customfield_{$fieldshortname}"),
+            ]);
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2023100903.05);
+    }
+
+    if ($oldversion < 2023100905.09) {
+
+        // Fix missing default admin presets "sensible settings" (those that should be treated as sensitive).
+        $newsensiblesettings = [
+            'bigbluebuttonbn_shared_secret@@none',
+            'apikey@@tiny_premium',
+            'matrixaccesstoken@@communication_matrix',
+        ];
+
+        $sensiblesettings = get_config('adminpresets', 'sensiblesettings');
+        foreach ($newsensiblesettings as $newsensiblesetting) {
+            if (strpos($sensiblesettings, $newsensiblesetting) === false) {
+                $sensiblesettings .= ", {$newsensiblesetting}";
+            }
+        }
+
+        set_config('sensiblesettings', $sensiblesettings, 'adminpresets');
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2023100905.09);
+    }
+
+    if ($oldversion < 2023100907.08) {
+        // If h5plib_v126 is no longer present, remove it.
+        if (!file_exists($CFG->dirroot . '/h5p/h5plib/v126/version.php')) {
+            // Clean config.
+            uninstall_plugin('h5plib', 'v126');
+        }
+
+        // If h5plib_v127 is present, set it as the default one.
+        if (file_exists($CFG->dirroot . '/h5p/h5plib/v127/version.php')) {
+            set_config('h5plibraryhandler', 'h5plib_v127');
+        }
+
+        upgrade_main_savepoint(true, 2023100907.08);
+    }
+
     return true;
 }

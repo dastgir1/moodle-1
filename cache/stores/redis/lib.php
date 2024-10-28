@@ -63,6 +63,9 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
      */
     const TTL_EXPIRE_BATCH = 10000;
 
+    /** @var int The number of seconds to wait for a connection or response from the Redis server. */
+    const CONNECTION_TIMEOUT = 10;
+
     /**
      * Name of this store.
      *
@@ -241,8 +244,16 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
         }
 
         try {
-            if ($redis->connect($server, $port, 1, null, 100, 1, $opts)) {
-
+            $connection = $redis->connect(
+                $server,
+                $port,
+                self::CONNECTION_TIMEOUT, // Timeout.
+                null,
+                100, // Retry interval.
+                self::CONNECTION_TIMEOUT, // Read timeout.
+                $opts,
+            );
+            if ($connection) {
                 if (!empty($password)) {
                     $redis->auth($password);
                 }
@@ -355,7 +366,7 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
      * @return array An array of the values of the given keys.
      */
     public function get_many($keys) {
-        $values = $this->redis->hMGet($this->hash, $keys);
+        $values = $this->redis->hMGet($this->hash, $keys) ?: [];
 
         if ($this->compressor == self::COMPRESSOR_NONE) {
             return $values;
@@ -447,7 +458,7 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
                 $ttlparams[] = $key;
             }
         }
-        if ($usettl) {
+        if ($usettl && count($ttlparams) > 0) {
             // Store all the key values with current time.
             $this->redis->zAdd($this->hash . self::TTL_SUFFIX, [], ...$ttlparams);
             // The return value to the zAdd function never indicates whether the operation succeeded

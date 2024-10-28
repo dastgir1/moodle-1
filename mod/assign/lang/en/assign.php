@@ -221,6 +221,11 @@ $string['eventsubmissionviewed'] = 'Submission viewed.';
 $string['eventworkflowstateupdated'] = 'The state of the workflow has been updated.';
 $string['expandreviewpanel'] = 'Expand review panel';
 $string['extensionduedate'] = 'Extension due date';
+$string['extensionduedatecurrent'] = 'Current extension due date';
+$string['extensionduedatefrom'] = 'From {$a}';
+$string['extensionduedatenone'] = 'None';
+$string['extensionduedateto'] = 'To {$a}';
+$string['extensionduedatewithout'] = 'Users without an extension: {$a}';
 $string['extensionnotafterduedate'] = 'Extension date must be after the due date';
 $string['extensionnotafterfromdate'] = 'Extension date must be after the allow submissions from date';
 $string['fixrescalednullgrades'] = 'This assignment contains some erroneous grades. You can <a href="{$a->link}">automatically fix these grades</a>. This may affect course totals.';
@@ -475,7 +480,9 @@ $string['reopenuntilpassincompatiblewithblindmarking'] = 'Reopen until pass opti
 $string['requiresubmissionstatement'] = 'Require that students accept the submission statement';
 $string['requiresubmissionstatement_help'] = 'Require that students accept the submission statement for all submissions to this assignment.';
 $string['requireallteammemberssubmit'] = 'Require all group members submit';
-$string['requireallteammemberssubmit_help'] = 'If enabled, all members of the student group must click the submit button for this assignment before the group submission will be considered as submitted. If disabled, the group submission will be considered as submitted as soon as any member of the student group clicks the submit button.';
+$string['requireallteammemberssubmit_help'] = 'This setting must be used together with the \'Require students to click the submit button\' in Submission settings.
+
+If enabled, all group members must click the submit button for the group submission to be considered as submitted. If disabled, any group member can click the submit button.';
 $string['recordid'] = 'Identifier';
 $string['removesubmission'] = 'Remove submission';
 $string['removesubmissionforstudent'] = 'Remove submission for student: (id={$a->id}, fullname={$a->fullname}).';
@@ -570,9 +577,9 @@ $string['submissionslockedshort'] = 'Submission changes not allowed';
 $string['submissionsclosed'] = 'Submissions closed';
 $string['submissionsettings'] = 'Submission settings';
 $string['submissionstatement'] = 'Submission statement';
-$string['submissionstatement_help'] = 'Assignment submission confirmation statement';
 $string['submissionstatementdefault'] = 'This submission is my own work, except where I have acknowledged the use of the works of other people.';
 $string['submissionstatement_help'] = 'Statement that each student must accept in order to submit their work.';
+$string['submissionstatementrequired'] = 'You are required to agree to this statement before you can submit.';
 $string['submissionstatementteamsubmission'] = 'Group submission statement';
 $string['submissionstatementteamsubmissiondefault'] = 'This submission is the work of my group, except where we have acknowledged the use of the works of other people.';
 $string['submissionstatementteamsubmission_help'] = 'Statement that each student must accept in order to submit the work of their group.';

@@ -52,7 +52,7 @@ Feature: Teachers can toggle the visibility of the grade categories in the Grade
       | Course total        |
     And "Collapse" "link" should exist in the "Course" "table_row"
     And "Expand" "link" should exist in the "Category 1" "table_row"
-    And the following should not exist in the "user-grades" table:
+    And the following should not exist in the "setup-grades" table:
       | Test assignment two |
       | Manual grade        |
       | Category 1 total    |
@@ -78,14 +78,12 @@ Feature: Teachers can toggle the visibility of the grade categories in the Grade
       | Course              |
     And I should see "Course" in the "setup-grades" "table"
     And "Expand" "link" should exist in the "Course" "table_row"
-    And the following should not exist in the "setup-grades" table:
-      | Name                |
-      | Test assignment one |
-      | Category 1          |
-      | Test assignment two |
-      | Manual grade        |
-      | Category 1 total    |
-      | Course total        |
+    And I should not see "Test assignment one" in the "setup-grades" "table"
+    And I should not see "Category 1" in the "setup-grades" "table"
+    And I should not see "Test assignment two" in the "setup-grades" "table"
+    And I should not see "Manual grade" in the "setup-grades" "table"
+    And I should not see "Category 1 total" in the "setup-grades" "table"
+    And I should not see "Course total" in the "setup-grades" "table"
     # Expand the grade category 'Course'. 'Category 1' should be still collapsed.
     And I click on "Expand" "link" in the "Course" "table_row"
     And the following should exist in the "setup-grades" table:
@@ -96,11 +94,9 @@ Feature: Teachers can toggle the visibility of the grade categories in the Grade
       | Course total        |
     And "Collapse" "link" should exist in the "Course" "table_row"
     And "Expand" "link" should exist in the "Category 1" "table_row"
-    And the following should not exist in the "setup-grades" table:
-      | Name                |
-      | Test assignment two |
-      | Manual grade        |
-      | Category 1 total    |
+    And I should not see "Test assignment two" in the "setup-grades" "table"
+    And I should not see "Manual grade" in the "setup-grades" "table"
+    And I should not see "Category 1 total" in the "setup-grades" "table"
 
   Scenario: A teacher can see the aggregated max grade for a grade category even when the category is collapsed
     Given the following should exist in the "setup-grades" table:
@@ -139,8 +135,6 @@ Feature: Teachers can toggle the visibility of the grade categories in the Grade
       | Category 1          |
       | Test assignment two |
       | Manual grade        |
-      | Category 1 total    |
-      | Course total        |
     And "Collapse" "link" should exist in the "Course" "table_row"
     And "Collapse" "link" should exist in the "Category 1" "table_row"
     # Collapse the grade category 'Category 1'.
@@ -152,11 +146,9 @@ Feature: Teachers can toggle the visibility of the grade categories in the Grade
       | Category 1          |
     And "Collapse" "link" should exist in the "Course" "table_row"
     And "Expand" "link" should exist in the "Category 1" "table_row"
-    And the following should not exist in the "setup-grades" table:
-      | Name                |
-      | Test assignment two |
-      | Manual grade        |
-      | Category 1 total    |
+    And I should not see "Test assignment two" in the "setup-grades" "table"
+    And I should not see "Manual grade" in the "setup-grades" "table"
+    And I should not see "Category 1 total" in the "setup-grades" "table"
     # Expand the grade category 'Category 1'.
     And I click on "Expand" "link" in the "Category 1" "table_row"
     And the following should exist in the "setup-grades" table:
@@ -166,8 +158,6 @@ Feature: Teachers can toggle the visibility of the grade categories in the Grade
       | Category 1          |
       | Test assignment two |
       | Manual grade        |
-      | Category 1 total    |
-      | Course total        |
     And "Collapse" "link" should exist in the "Course" "table_row"
     And "Collapse" "link" should exist in the "Category 1" "table_row"
     # Collapse again the grade category 'Category 1'.
@@ -176,14 +166,10 @@ Feature: Teachers can toggle the visibility of the grade categories in the Grade
     And I click on "Collapse" "link" in the "Course" "table_row"
     And I should see "Course" in the "setup-grades" "table"
     And "Expand" "link" should exist in the "Course" "table_row"
-    And the following should not exist in the "setup-grades" table:
-      | Name                |
-      | Test assignment one |
-      | Category 1          |
-      | Test assignment two |
-      | Manual grade        |
-      | Category 1 total    |
-      | Course total        |
+    And I should not see "Test assignment one" in the "setup-grades" "table"
+    And I should not see "Category 1" in the "setup-grades" "table"
+    And I should not see "Test assignment two" in the "setup-grades" "table"
+    And I should not see "Manual grade" in the "setup-grades" "table"
     # Expand the grade category 'Course'. 'Category 1' should be still collapsed.
     And I click on "Expand" "link" in the "Course" "table_row"
     And the following should exist in the "setup-grades" table:
@@ -191,14 +177,11 @@ Feature: Teachers can toggle the visibility of the grade categories in the Grade
       | Course              |
       | Test assignment one |
       | Category 1          |
-      | Course total        |
     And "Collapse" "link" should exist in the "Course" "table_row"
     And "Expand" "link" should exist in the "Category 1" "table_row"
-    And the following should not exist in the "setup-grades" table:
-      | Name                |
-      | Test assignment two |
-      | Manual grade        |
-      | Category 1 total    |
+    And I should not see "Test assignment two" in the "setup-grades" "table"
+    And I should not see "Manual grade" in the "setup-grades" "table"
+    And I should not see "Category 1 total" in the "setup-grades" "table"
 
   Scenario: Previously collapsed categories are still shown as collapsed when a teacher navigates back to Gradebook setup
     # Collapse the grade category 'Category 1' and navigate to the course homepage.
@@ -213,11 +196,9 @@ Feature: Teachers can toggle the visibility of the grade categories in the Grade
       | Course total        |
     And "Collapse" "link" should exist in the "Course" "table_row"
     And "Expand" "link" should exist in the "Category 1" "table_row"
-    And the following should not exist in the "setup-grades" table:
-      | Name                |
-      | Test assignment two |
-      | Manual grade        |
-      | Category 1 total    |
+    And I should not see "Test assignment two" in the "setup-grades" "table"
+    And I should not see "Manual grade" in the "setup-grades" "table"
+    And I should not see "Category 1 total" in the "setup-grades" "table"
 
   Scenario: Previously collapsed categories are still shown as collapsed when a teacher is moving grade items in Gradebook setup
     # Collapse the grade category 'Category 1'.
@@ -229,21 +210,31 @@ Feature: Teachers can toggle the visibility of the grade categories in the Grade
       | Course              |
       | Test assignment one |
       | Category 1          |
-      | Course total        |
     And "Collapse" "link" should exist in the "Course" "table_row"
     And "Expand" "link" should exist in the "Category 1" "table_row"
-    And the following should not exist in the "setup-grades" table:
-      | Name                |
-      | Test assignment two |
-      | Manual grade        |
-      | Category 1 total    |
+    And I should not see "Test assignment two" in the "setup-grades" "table"
+    And I should not see "Manual grade" in the "setup-grades" "table"
+    And I should not see "Category 1 total" in the "setup-grades" "table"
 
   Scenario: Grade categories are shown as collapsed only to the teacher that collapsed them
     # Collapse the grade category 'Category 1'.
     Given I click on "Collapse" "link" in the "Category 1" "table_row"
-    # Log in as teacher2 and confirm that the category 'Category 1' is not collapsed.
-    When I am on the "Course" "grades > gradebook setup" page logged in as "teacher2"
+    When I reload the page
+    # Reload the page and confirm that the category 'Category 1' is still collapsed.
     Then the following should exist in the "setup-grades" table:
+      | Name                |
+      | Course              |
+      | Test assignment one |
+      | Category 1          |
+      | Course total        |
+    And "Collapse" "link" should exist in the "Course" "table_row"
+    And "Expand" "link" should exist in the "Category 1" "table_row"
+    And I should not see "Test assignment two" in the "setup-grades" "table"
+    And I should not see "Manual grade" in the "setup-grades" "table"
+    And I should not see "Category 1 total" in the "setup-grades" "table"
+    # Log in as teacher2 and confirm that the category 'Category 1' is not collapsed.
+    And I am on the "Course" "grades > gradebook setup" page logged in as "teacher2"
+    And the following should exist in the "setup-grades" table:
       | Name                |
       | Course              |
       | Test assignment one |
@@ -254,18 +245,3 @@ Feature: Teachers can toggle the visibility of the grade categories in the Grade
       | Course total        |
     And "Collapse" "link" should exist in the "Course" "table_row"
     And "Collapse" "link" should exist in the "Category 1" "table_row"
-    # Log in as teacher1 and confirm that the category 'Category 1' is still collapsed.
-    And I am on the "Course" "grades > gradebook setup" page logged in as "teacher1"
-    And the following should exist in the "setup-grades" table:
-      | Name                |
-      | Course              |
-      | Test assignment one |
-      | Category 1          |
-      | Course total        |
-    And "Collapse" "link" should exist in the "Course" "table_row"
-    And "Expand" "link" should exist in the "Category 1" "table_row"
-    And the following should not exist in the "setup-grades" table:
-      | Name                |
-      | Test assignment two |
-      | Manual grade        |
-      | Category 1 total    |

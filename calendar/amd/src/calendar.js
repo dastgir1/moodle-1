@@ -34,6 +34,7 @@ define([
     'core_calendar/crud',
     'core_calendar/selectors',
     'core/config',
+    'core/str',
 ],
 function(
     $,
@@ -45,6 +46,7 @@ function(
     CalendarCrud,
     CalendarSelectors,
     Config,
+    Str,
 ) {
 
     var SELECTORS = {
@@ -57,7 +59,9 @@ function(
         CALENDAR_MONTH_WRAPPER: ".calendarwrapper",
         TODAY: '.today',
         DAY_NUMBER_CIRCLE: '.day-number-circle',
-        DAY_NUMBER: '.day-number'
+        DAY_NUMBER: '.day-number',
+        SCREEN_READER_ANNOUNCEMENTS: '.calendar-announcements',
+        CURRENT_MONTH: '.calendar-controls .current'
     };
 
     /**
@@ -151,6 +155,12 @@ function(
         body.on(CalendarEvents.eventMoved, function() {
             CalendarViewManager.reloadCurrentMonth(root);
         });
+        // Announce the newly loaded month to screen readers.
+        body.on(CalendarEvents.monthChanged, root, async function() {
+            const monthName = body.find(SELECTORS.CURRENT_MONTH).text();
+            const monthAnnoucement = await Str.get_string('newmonthannouncement', 'calendar', monthName);
+            body.find(SELECTORS.SCREEN_READER_ANNOUNCEMENTS).html(monthAnnoucement);
+        });
 
         CalendarCrud.registerEditListeners(root, eventFormModalPromise);
     };
@@ -159,8 +169,9 @@ function(
      * Register event listeners for the module.
      *
      * @param {object} root The calendar root element
+     * @param {boolean} isCalendarBlock - A flag indicating whether this is a calendar block.
      */
-    var registerEventListeners = function(root) {
+    var registerEventListeners = function(root, isCalendarBlock) {
         const viewingFullCalendar = document.getElementById(CalendarSelectors.fullCalendarView);
         // Listen the click on the day link to render the day view.
         root.on('click', SELECTORS.VIEW_DAY_LINK, function(e) {
@@ -173,9 +184,13 @@ function(
             const url = '?view=day&time=' + dayLink.data('timestamp');
             if (viewingFullCalendar) {
                 CalendarViewManager.refreshDayContent(root, year, month, day, courseId, categoryId, root,
-                    'core_calendar/calendar_day').then(function() {
+                    'core_calendar/calendar_day', isCalendarBlock).then(function() {
                     e.preventDefault();
-                    return CalendarViewManager.updateUrl(url);
+                    // Update the URL if it's not calendar block.
+                    if (!isCalendarBlock) {
+                        CalendarViewManager.updateUrl(url);
+                    }
+                    return;
                 }).catch(Notification.exception);
             } else {
                 window.location.assign(Config.wwwroot + '/calendar/view.php' + url);
@@ -234,10 +249,16 @@ function(
     };
 
     return {
-        init: function(root) {
+        /**
+         * Initializes the calendar view manager and registers event listeners.
+         *
+         * @param {HTMLElement} root - The root element where the calendar view manager and event listeners will be attached.
+         * @param {boolean} [isCalendarBlock=false] - A flag indicating whether this is a calendar block.
+         */
+        init: function(root, isCalendarBlock = false) {
             root = $(root);
-            CalendarViewManager.init(root);
-            registerEventListeners(root);
+            CalendarViewManager.init(root, 'month', isCalendarBlock);
+            registerEventListeners(root, isCalendarBlock);
         }
     };
 });

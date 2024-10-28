@@ -380,7 +380,7 @@ class data_field_base {     // Base class for Database Field Types (see field/*/
         }
 
         $str = '<div title="' . s($this->field->description) . '">';
-        $str .= '<label for="field_'.$this->field->id.'"><span class="accesshide">'.$this->field->name.'</span>';
+        $str .= '<label for="field_'.$this->field->id.'"><span class="accesshide">'.s($this->field->name).'</span>';
         if ($this->field->required) {
             $image = $OUTPUT->pix_icon('req', get_string('requiredelement', 'form'));
             $str .= html_writer::div($image, 'inline-req');
@@ -1005,6 +1005,7 @@ function data_get_field_from_id($fieldid, $data){
 function data_get_field_new($type, $data) {
     global $CFG;
 
+    $type = clean_param($type, PARAM_ALPHA);
     $filepath = $CFG->dirroot.'/mod/data/field/'.$type.'/field.class.php';
     // It should never access this method if the subfield class doesn't exist.
     if (!file_exists($filepath)) {
@@ -1032,6 +1033,7 @@ function data_get_field(stdClass $field, stdClass $data, ?stdClass $cm=null): da
     if (!isset($field->type)) {
         return new data_field_base($field);
     }
+    $field->type = clean_param($field->type, PARAM_ALPHA);
     $filepath = $CFG->dirroot.'/mod/data/field/'.$field->type.'/field.class.php';
     if (!file_exists($filepath)) {
         return new data_field_base($field);
@@ -1108,9 +1110,11 @@ function data_numentries($data, $userid=null) {
  * @param object $data
  * @param int $groupid
  * @param int $userid
+ * @param bool $approved If specified, and the user has the capability to approve entries, then this value
+ *      will be used as the approved status of the new record
  * @return bool
  */
-function data_add_record($data, $groupid = 0, $userid = null) {
+function data_add_record($data, $groupid = 0, $userid = null, bool $approved = true) {
     global $USER, $DB;
 
     $cm = get_coursemodule_from_instance('data', $data->id);
@@ -1122,7 +1126,7 @@ function data_add_record($data, $groupid = 0, $userid = null) {
     $record->groupid = $groupid;
     $record->timecreated = $record->timemodified = time();
     if (has_capability('mod/data:approve', $context)) {
-        $record->approved = 1;
+        $record->approved = $approved;
     } else {
         $record->approved = 0;
     }
@@ -1759,9 +1763,9 @@ function data_print_preference_form($data, $perpage, $search, $sort='', $order='
         echo '<optgroup label="'.get_string('fields', 'data').'">';
         foreach ($fields as $field) {
             if ($field->id == $sort) {
-                echo '<option value="'.$field->id.'" selected="selected">'.$field->name.'</option>';
+                echo '<option value="'.$field->id.'" selected="selected">'.s($field->name).'</option>';
             } else {
-                echo '<option value="'.$field->id.'">'.$field->name.'</option>';
+                echo '<option value="'.$field->id.'">'.s($field->name).'</option>';
             }
         }
         echo '</optgroup>';

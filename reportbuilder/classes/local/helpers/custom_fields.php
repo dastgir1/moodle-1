@@ -172,16 +172,20 @@ class custom_fields {
 
                 $columns[] = (new column(
                     'customfield_' . $field->get('shortname'),
-                    new lang_string('customfieldcolumn', 'core_reportbuilder', $field->get_formatted_name()),
+                    new lang_string('customfieldcolumn', 'core_reportbuilder', $field->get_formatted_name(false)),
                     $this->entityname
                 ))
                     ->add_joins($this->get_joins())
                     ->add_join($this->get_table_join($field))
                     ->add_field($datafieldsql, $datafield)
                     ->add_fields($selectfields)
+                    ->add_field($this->tablefieldalias, 'tablefieldalias')
                     ->set_type($columntype)
                     ->set_is_sortable($columntype !== column::TYPE_LONGTEXT)
                     ->add_callback(static function($value, stdClass $row, field_controller $field): string {
+                        if ($row->tablefieldalias === null) {
+                            return '';
+                        }
                         return (string) data_controller::create(0, $row, $field)->export_value();
                     }, $field)
                     // Important. If the handler implements can_view() function, it will be called with parameter $instanceid=0.
@@ -206,6 +210,10 @@ class custom_fields {
 
         if ($field->get('type') === 'date') {
             return column::TYPE_TIMESTAMP;
+        }
+
+        if ($field->get('type') === 'select') {
+            return column::TYPE_TEXT;
         }
 
         if ($datafield === 'intvalue') {
@@ -253,7 +261,7 @@ class custom_fields {
                 $filter = (new filter(
                     $typeclass,
                     'customfield_' . $field->get('shortname'),
-                    new lang_string('customfieldcolumn', 'core_reportbuilder', $field->get_formatted_name()),
+                    new lang_string('customfieldcolumn', 'core_reportbuilder', $field->get_formatted_name(false)),
                     $this->entityname,
                     $datafieldsql
                 ))
@@ -263,12 +271,7 @@ class custom_fields {
                 // Options are stored inside configdata json string and we need to convert it to array.
                 if ($field->get('type') === 'select') {
                     $filter->set_options_callback(static function() use ($field): array {
-                        $options = explode("\r\n", $field->get_configdata_property('options'));
-                        // Method set_options starts using array at index 1. we shift one position on this array.
-                        // In course settings this menu has an empty option and we need to respect that.
-                        array_unshift($options, " ");
-                        unset($options[0]);
-                        return $options;
+                        return $field->get_options();
                     });
                 }
 

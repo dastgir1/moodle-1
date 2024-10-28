@@ -1400,6 +1400,8 @@ function assign_pluginfile($course,
 function mod_assign_output_fragment_gradingpanel($args) {
     global $CFG;
 
+    \core\session\manager::write_close(); // No changes to session in this function.
+
     $context = $args['context'];
 
     if ($context->contextlevel != CONTEXT_MODULE) {
@@ -1752,24 +1754,29 @@ function mod_assign_core_calendar_event_timestart_updated(\calendar_event $event
 /**
  * Return a list of all the user preferences used by mod_assign.
  *
- * @return array
+ * @uses core_user::is_current_user
+ *
+ * @return array[]
  */
-function mod_assign_user_preferences() {
+function mod_assign_user_preferences(): array {
     $preferences = array();
     $preferences['assign_filter'] = array(
         'type' => PARAM_ALPHA,
         'null' => NULL_NOT_ALLOWED,
-        'default' => ''
+        'default' => '',
+        'permissioncallback' => [core_user::class, 'is_current_user'],
     );
     $preferences['assign_workflowfilter'] = array(
         'type' => PARAM_ALPHA,
         'null' => NULL_NOT_ALLOWED,
-        'default' => ''
+        'default' => '',
+        'permissioncallback' => [core_user::class, 'is_current_user'],
     );
     $preferences['assign_markerfilter'] = array(
         'type' => PARAM_ALPHANUMEXT,
         'null' => NULL_NOT_ALLOWED,
-        'default' => ''
+        'default' => '',
+        'permissioncallback' => [core_user::class, 'is_current_user'],
     );
 
     return $preferences;

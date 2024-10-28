@@ -380,16 +380,8 @@ define ('BLOG_COURSE_LEVEL', 3);
 define ('BLOG_SITE_LEVEL', 4);
 define ('BLOG_GLOBAL_LEVEL', 5);
 
-
-// Tag constants.
-/**
- * To prevent problems with multibytes strings,Flag updating in nav not working on the review page. this should not exceed the
- * length of "varchar(255) / 3 (bytes / utf-8 character) = 85".
- * TODO: this is not correct, varchar(255) are 255 unicode chars ;-)
- *
- * @todo define(TAG_MAX_LENGTH) this is not correct, varchar(255) are 255 unicode chars ;-)
- */
-define('TAG_MAX_LENGTH', 50);
+/** The maximum length of a tag */
+define('TAG_MAX_LENGTH', 255);
 
 // Password policy constants.
 define ('PASSWORD_LOWER', 'abcdefghijklmnopqrstuvwxyz');
@@ -1069,25 +1061,8 @@ function clean_param($param, $type) {
 
         case PARAM_HOST:
             // Allow FQDN or IPv4 dotted quad.
-            $param = preg_replace('/[^\.\d\w-]/', '', (string)$param );
-            // Match ipv4 dotted quad.
-            if (preg_match('/(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/', $param, $match)) {
-                // Confirm values are ok.
-                if ( $match[0] > 255
-                     || $match[1] > 255
-                     || $match[3] > 255
-                     || $match[4] > 255 ) {
-                    // Hmmm, what kind of dotted quad is this?
-                    $param = '';
-                }
-            } else if ( preg_match('/^[\w\d\.-]+$/', $param) // Dots, hyphens, numbers.
-                       && !preg_match('/^[\.-]/',  $param) // No leading dots/hyphens.
-                       && !preg_match('/[\.-]$/',  $param) // No trailing dots/hyphens.
-                       ) {
-                // All is ok - $param is respected.
-            } else {
-                // All is not ok...
-                $param='';
+            if (!\core\ip_utils::is_domain_name($param) && !\core\ip_utils::is_ipv4_address($param)) {
+                $param = '';
             }
             return $param;
 
@@ -1770,6 +1745,9 @@ function purge_other_caches() {
     remove_dir($CFG->localcachedir, true);
     set_config('localcachedirpurged', time());
     make_localcache_directory('', true);
+
+    // Rewarm the bootstrap.php files so the siteid is always present after a purge.
+    initialise_local_config_cache();
     \core\task\manager::clear_static_caches();
 }
 
@@ -4604,6 +4582,10 @@ function complete_user_login($user, array $extrauserinfo = []) {
     );
     $event->trigger();
 
+    // Allow plugins to callback as soon possible after user has completed login.
+    $hook = new \core_user\hook\after_login_completed();
+    \core\hook\manager::get_instance()->dispatch($hook);
+
     // Check if the user is using a new browser or session (a new MoodleSession cookie is set in that case).
     // If the user is accessing from the same IP, ignore everything (most of the time will be a new session in the same browser).
     // Skip Web Service requests, CLI scripts, AJAX scripts, and request from the mobile app itself.
@@ -4617,12 +4599,26 @@ function complete_user_login($user, array $extrauserinfo = []) {
         $ismoodleapp = false;
         $useragent = \core_useragent::get_user_agent_string();
 
-        // Schedule adhoc task to sent a login notification to the user.
-        $task = new \core\task\send_login_notifications();
-        $task->set_userid($USER->id);
-        $task->set_custom_data(compact('ismoodleapp', 'useragent', 'loginip', 'logintime'));
-        $task->set_component('core');
-        \core\task\manager::queue_adhoc_task($task);
+        $sitepreferences = get_message_output_default_preferences();
+        // Check if new login notification is disabled at system level.
+        $newlogindisabled = $sitepreferences->moodle_newlogin_disable ?? 0;
+        // Check if message providers (web, email, mobile) are enabled at system level.
+        $msgproviderenabled = isset($sitepreferences->message_provider_moodle_newlogin_enabled);
+        // Get message providers enabled for a user.
+        $userpreferences = get_user_preferences('message_provider_moodle_newlogin_enabled');
+        // Check if notification processor plugins (web, email, mobile) are enabled at system level.
+        $msgprocessorsready = !empty(get_message_processors(true));
+        // If new login notification is enabled at system level then go for other conditions check.
+        $newloginenabled = $newlogindisabled ? 0 : ($userpreferences != 'none' && $msgproviderenabled);
+
+        if ($newloginenabled && $msgprocessorsready) {
+            // Schedule adhoc task to send a login notification to the user.
+            $task = new \core\task\send_login_notifications();
+            $task->set_userid($USER->id);
+            $task->set_custom_data(compact('ismoodleapp', 'useragent', 'loginip', 'logintime'));
+            $task->set_component('core');
+            \core\task\manager::queue_adhoc_task($task);
+        }
     }
 
     // Queue migrating the messaging data, if we need to.
@@ -4847,7 +4843,7 @@ function hash_internal_user_password(#[\SensitiveParameter] string $password, $f
  * It will remove Web Services user tokens too.
  *
  * @param stdClass $user User object (password property may be updated).
- * @param string $password Plain text password.
+ * @param string|null $password Plain text password.
  * @param bool $fasthash If true, use a low cost factor when generating the hash
  *                       This is much faster to generate but makes the hash
  *                       less secure. It is used when lots of hashes need to
@@ -4856,7 +4852,7 @@ function hash_internal_user_password(#[\SensitiveParameter] string $password, $f
  */
 function update_internal_user_password(
         stdClass $user,
-        #[\SensitiveParameter] string $password,
+        #[\SensitiveParameter] ?string $password,
         bool $fasthash = false
 ): bool {
     global $CFG, $DB;
@@ -7953,11 +7949,12 @@ function get_plugins_with_function($function, $file = 'lib.php', $include = true
         foreach ($pluginfunctions as $plugintype => $plugins) {
             foreach ($plugins as $plugin => $unusedfunction) {
                 $component = $plugintype . '_' . $plugin;
-                if (\core\hook\manager::get_instance()->is_deprecated_plugin_callback($plugincallback)) {
-                    if (\core\hook\manager::get_instance()->is_deprecating_hook_present($component, $plugincallback)) {
+                $hookmanager = \core\hook\manager::get_instance();
+                if ($hooks = $hookmanager->get_hooks_deprecating_plugin_callback($plugincallback)) {
+                    if ($hookmanager->is_deprecating_hook_present($component, $plugincallback)) {
                         // Ignore the old callback, it is there only for older Moodle versions.
                         unset($pluginfunctions[$plugintype][$plugin]);
-                    } else {
+                    } else if ($hookmanager->warn_on_unmigrated_legacy_hooks()) {
                         debugging("Callback $plugincallback in $component component should be migrated to new hook callback",
                             DEBUG_DEVELOPER);
                     }
@@ -8199,12 +8196,13 @@ function component_callback($component, $function, array $params = array(), $def
 
     if ($functionname) {
         if ($migratedtohook) {
-            if (\core\hook\manager::get_instance()->is_deprecated_plugin_callback($function)) {
-                if (\core\hook\manager::get_instance()->is_deprecating_hook_present($component, $function)) {
+            $hookmanager = \core\hook\manager::get_instance();
+            if ($hookmanager->is_deprecated_plugin_callback($function)) {
+                if ($hookmanager->is_deprecating_hook_present($component, $function)) {
                     // Do not call the old lib.php callback,
                     // it is there for compatibility with older Moodle versions only.
                     return null;
-                } else {
+                } else if ($hookmanager->warn_on_unmigrated_legacy_hooks()) {
                     debugging("Callback $function in $component component should be migrated to new hook callback",
                         DEBUG_DEVELOPER);
                 }

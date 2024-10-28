@@ -243,6 +243,11 @@ export default class ColumnSearch extends search_combobox {
     registerInputEvents() {
         // Register & handle the text input.
         this.searchInput.addEventListener('input', debounce(async() => {
+            if (this.getSearchTerm() === this.searchInput.value && this.searchResultsVisible()) {
+                window.console.warn(`Search term matches input value - skipping`);
+                // Debounce can happen multiple times quickly.
+                return;
+            }
             this.setSearchTerms(this.searchInput.value);
             // We can also require a set amount of input before search.
             if (this.searchInput.value === '') {
@@ -252,9 +257,13 @@ export default class ColumnSearch extends search_combobox {
                 // Display the "clear" search button in the search bar.
                 this.clearSearchButton.classList.remove('d-none');
             }
+            const pendingPromise = new Pending();
             // User has given something for us to filter against.
-            await this.filterrenderpipe();
-        }, 300));
+            await this.filterrenderpipe().then(() => {
+                pendingPromise.resolve();
+                return true;
+            });
+        }, 300, {pending: true}));
     }
 
     /**
@@ -430,8 +439,6 @@ export default class ColumnSearch extends search_combobox {
                     const rowCell = avgRowCell ?? rangeRowCell;
 
                     rowCell?.classList.toggle('d-none');
-                    rowCell?.setAttribute('aria-hidden',
-                        rowCell?.classList.contains('d-none') ? 'true' : 'false');
                 } else if (content.classList.contains('d-none')) {
                     // We should always have content but some cells do not contain menus or other actions.
                     element.classList.remove('collapsed');
@@ -441,19 +448,15 @@ export default class ColumnSearch extends search_combobox {
                     }
                     nodeSet.forEach(node => {
                         node?.classList.remove('d-none');
-                        node?.setAttribute('aria-hidden', 'false');
                     });
                     expandButton?.classList.add('d-none');
-                    expandButton?.setAttribute('aria-hidden', 'true');
                 } else {
                     element.classList.add('collapsed');
                     content.classList.remove('d-flex');
                     nodeSet.forEach(node => {
                         node?.classList.add('d-none');
-                        node?.setAttribute('aria-hidden', 'true');
                     });
                     expandButton?.classList.remove('d-none');
-                    expandButton?.setAttribute('aria-hidden', 'false');
                 }
             }
         });

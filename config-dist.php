@@ -66,10 +66,10 @@ $CFG->dboptions = array(
     'dbcollation' => 'utf8mb4_unicode_ci', // MySQL has partial and full UTF-8
                                 // support. If you wish to use partial UTF-8
                                 // (three bytes) then set this option to
-                                // 'utf8_unicode_ci', otherwise this option
-                                // can be removed for MySQL (by default it will
-                                // use 'utf8mb4_unicode_ci'. This option should
-                                // be removed for all other databases.
+                                // 'utf8_unicode_ci'. If using the recommended
+                                // settings with full UTF-8 support this should
+                                // be set to 'utf8mb4_unicode_ci'. This option
+                                // should be removed for all other databases.
     // 'versionfromdb' => false,   // On MySQL and MariaDB, this can force
                                 // the DB version to be evaluated using
                                 // the VERSION function instead of the version
@@ -318,6 +318,8 @@ $CFG->admin = 'admin';
 //         '/tempdir/'  => '/var/www/moodle/temp',     // for custom $CFG->tempdir locations
 //         '/filedir'   => '/var/www/moodle/filedir',  // for custom $CFG->filedir locations
 //     );
+// Please note: It is *not* possible to use X-Sendfile with the per-request directory.
+// The directory is highly likely to have been deleted by the time the web server sends the file.
 //
 // YUI caching may be sometimes improved by slasharguments:
 //     $CFG->yuislasharguments = 1;

@@ -637,6 +637,8 @@ class mod_quiz_external extends external_api {
             require_capability('mod/quiz:viewreports', $context);
         }
 
+        // Update quiz with override information.
+        $quiz = quiz_update_effective_access($quiz, $params['userid']);
         $attempts = quiz_get_user_attempts($quiz->id, $user->id, 'all', true);
 
         $result = [];
@@ -1446,6 +1448,10 @@ class mod_quiz_external extends external_api {
         } else {
             $page = 'all';
         }
+
+        // Make sure all users associated to the attempt steps are loaded. Otherwise, this will
+        // trigger a debugging message.
+        $attemptobj->preload_all_attempt_step_users();
 
         // Prepare the output.
         $result = [];

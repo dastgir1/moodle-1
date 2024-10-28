@@ -1,6 +1,45 @@
 This files describes API changes in core libraries and APIs,
 information provided here is intended especially for developers.
 
+=== 4.3.8 ===
+
+* The `navigation_cache` class now uses the Moodle Universal Cache (MUC) to store the navigation cache data instead of storing
+  it in the global `$SESSION` variable.
+
+=== 4.3.7 ===
+
+* The Moodle autoloader should now be registered using `\core\component::register_autoloader` rather
+  than manually doing so in any exceptional location which requires it. It is not normally necessary
+  to include the autoloader manually, as it is registered automatically when the Moodle environment
+  is bootstrapped.
+* Redis session cache has been improved to make a single call where two were used before.
+  - The minimum Redis server version is now 2.6.12.
+  - The minimum PHP Redis extension version is now 2.2.4.
+
+=== 4.3.6 ===
+
+* The `\core\dataformat::get_format_instance` method is now public, and can be used to retrieve a writer instance for
+  a given dataformat
+* Added the ability for unit tests to autoload classes in the `\[component]\tests\` namespace from the `[path/to/component]/tests/classes` directory.
+* Added the `advanced_testcase::load_fixture()` helper to load fixtures from a components `tests/fixtures/` folder.
+
+=== 4.3.4 ===
+
+* groups_get_user_groups() in grouplib has a new $includehidden paramater, which will return groups for user even if they have
+  GROUP_VISIBILITY_NONE. This is false by default, and should be used with care. The calling code must ensure that these groups
+  are not exposed to the user as this may be a privacy issue.
+
+=== 4.3.3 ===
+
+* The `html_writer::select_time` method has a `$timezone` parameter to use when formatting the time parameter
+* New Behat `heading` named selector to more easily assert the presence of H1-H6 elements on the page
+
+=== 4.3.2 ===
+
+* The current page language is available in new `core/config` language property for Javascript modules
+* The customdata of adhoc_task class now accepts a new value called noretry. If set to true, the ad-hoc task will not be retried
+  if it fails.
+
 === 4.3.1 ===
 
 * Added modalform config object `moduleName` param that can be used to define alternative modal type for the modalform. By default 'core/modal_save_cancel' is used.

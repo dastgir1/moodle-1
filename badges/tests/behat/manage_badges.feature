@@ -43,7 +43,7 @@ Feature: Manage badges
     And I navigate to "Badges > Manage badges" in site administration
     And I press "Delete" action in the "Badge #1" report row
     And I press "Delete and remove existing issued badges"
-    Then I should see "There are currently no badges available for users to earn"
+    Then I should see "There are no matching badges available for users to earn."
 
   Scenario: Enable and disable access to a badge
     Given I log in as "admin"
@@ -54,23 +54,24 @@ Feature: Manage badges
     And I set the field "Manager" to "1"
     And I press "Save"
     And I navigate to "Badges > Manage badges" in site administration
-    And I open the action menu in "Badge #1" "table_row"
-    And I choose "Enable access" in the open action menu
+    And I press "Enable access" action in the "Badge #1" report row
     And I should see "Changes in badge access"
     And I press "Continue"
     And I should see "Access to the badges was successfully enabled"
     Then the following should exist in the "reportbuilder-table" table:
       | Name      | Badge status  |
       | Badge #1  | Available     |
-    And I open the action menu in "Badge #1" "table_row"
-    And I choose "Disable access" in the open action menu
+    And I press "Disable access" action in the "Badge #1" report row
     And I should see "Access to the badges was successfully disabled"
     And the following should exist in the "reportbuilder-table" table:
       | Name      | Badge status  |
       | Badge #1  | Not available |
 
   Scenario: Award a badge
-    Given I log in as "admin"
+    Given the following "users" exist:
+      | username | firstname | lastname | email             |
+      | user1    | User      | One      | user1@example.com |
+    When I log in as "admin"
     And I navigate to "Badges > Manage badges" in site administration
     And I press "Edit" action in the "Badge #1" report row
     And I select "Criteria" from the "jump" singleselect
@@ -78,14 +79,17 @@ Feature: Manage badges
     And I set the field "Manager" to "1"
     And I press "Save"
     And I navigate to "Badges > Manage badges" in site administration
-    And I open the action menu in "Badge #1" "table_row"
-    And I choose "Enable access" in the open action menu
+    And I press "Enable access" action in the "Badge #1" report row
     And I press "Continue"
-    And I open the action menu in "Badge #1" "table_row"
-    And I choose "Award badge" in the open action menu
-    And I set the field "potentialrecipients[]" to "Admin User (moodle@example.com)"
+    And I press "Award badge" action in the "Badge #1" report row
+    And I set the field "potentialrecipients[]" to "Admin User (moodle@example.com),User One (user1@example.com)"
     And I press "Award badge"
     And I navigate to "Badges > Manage badges" in site administration
-    And the following should exist in the "reportbuilder-table" table:
+    Then the following should exist in the "Badges" table:
       | Name      | Badge status  | Recipients |
-      | Badge #1  | Available     | 1          |
+      | Badge #1  | Available     | 2          |
+    And I click on "2" "link" in the "Badge #1" "table_row"
+    And the following should exist in the "generaltable" table:
+      | -1-        |
+      | Admin User |
+      | User One   |

@@ -25,6 +25,7 @@
 namespace core_courseformat\output\local\content;
 
 use cm_info;
+use context_course;
 use core\output\named_templatable;
 use core_availability\info_module;
 use core_courseformat\base as course_format;
@@ -121,6 +122,7 @@ class cm implements named_templatable, renderable {
             'classlist' => [],
             'cmid' => $mod->id,
             'editing' => $PAGE->user_is_editing(),
+            'sectionnum' => $this->section->section,
         ];
 
         // Add partial data segments.
@@ -300,7 +302,13 @@ class cm implements named_templatable, renderable {
      * @return bool if the cm has editor data
      */
     protected function add_editor_data(stdClass &$data, renderer_base $output): bool {
-        if (!$this->format->show_editor()) {
+        $course = $this->format->get_course();
+        $coursecontext = context_course::instance($course->id);
+        $editcaps = [];
+        if (has_capability('moodle/course:activityvisibility', $coursecontext)) {
+            $editcaps = ['moodle/course:activityvisibility'];
+        }
+        if (!$this->format->show_editor($editcaps)) {
             return false;
         }
         $returnsection = $this->format->get_section_number();

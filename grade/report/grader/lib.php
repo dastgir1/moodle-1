@@ -105,6 +105,13 @@ class grade_report_grader extends grade_report {
     /** @var int Maximum number of students that can be shown on one page */
     public const MAX_STUDENTS_PER_PAGE = 5000;
 
+    /**
+     * @var int The maximum number of grades that can be shown on one page.
+     *
+     * More than this causes issues for the browser due to the size of the page.
+     */
+    public const MAX_GRADES_PER_PAGE = 200000;
+
     /** @var int[] List of available options on the pagination dropdown */
     public const PAGINATION_OPTIONS = [20, 100];
 
@@ -466,9 +473,10 @@ class grade_report_grader extends grade_report {
                    $this->userwheresql
                    $this->groupwheresql
               ORDER BY $sort";
-        // We never work with unlimited result. Limit the number of records by MAX_STUDENTS_PER_PAGE if no other limit is specified.
+        // We never work with unlimited result. Limit the number of records by $this->get_max_students_per_page() if no other limit
+        // is specified.
         $studentsperpage = ($this->get_students_per_page() && !$allusers) ?
-            $this->get_students_per_page() : static::MAX_STUDENTS_PER_PAGE;
+            $this->get_students_per_page() : $this->get_max_students_per_page();
         $this->users = $DB->get_records_sql($sql, $params, $studentsperpage * $this->page, $studentsperpage);
 
         if (empty($this->users)) {
@@ -524,6 +532,18 @@ class grade_report_grader extends grade_report {
         });
 
         return $this->allgradeitems;
+    }
+
+    /**
+     * Return the maximum number of students we can display per page.
+     *
+     * This is based on the number of grade items on the course, to limit the overall number of grades displayed on a single page.
+     * Trying to display too many grades causes browser issues.
+     *
+     * @return int
+     */
+    public function get_max_students_per_page(): int {
+        return round(static::MAX_GRADES_PER_PAGE / count($this->get_allgradeitems()));
     }
 
     /**
@@ -676,7 +696,10 @@ class grade_report_grader extends grade_report {
             $fieldheader->scope = 'col';
             $fieldheader->header = true;
 
-            $collapsecontext = ['field' => $field, 'name' => $field];
+            $collapsecontext = [
+                'field' => $field,
+                'name' => \core_user\fields::get_display_name($field),
+            ];
 
             $collapsedicon = $OUTPUT->render_from_template('gradereport_grader/collapse/icon', $collapsecontext);
             // Need to wrap the button into a div with our hooking element for user items, gradeitems already have this.
@@ -737,11 +760,17 @@ class grade_report_grader extends grade_report {
             $userrow->cells[] = $usercell;
 
             foreach ($extrafields as $field) {
+                $fieldcellcontent = s($user->$field);
+                if ($field === 'country') {
+                    $countries = get_string_manager()->get_list_of_countries();
+                    $fieldcellcontent = $countries[$user->$field] ?? $fieldcellcontent;
+                }
+
                 $fieldcell = new html_table_cell();
                 $fieldcell->attributes['class'] = 'userfield user' . $field;
                 $fieldcell->attributes['data-col'] = $field;
                 $fieldcell->header = false;
-                $fieldcell->text = html_writer::tag('div', s($user->{$field}), [
+                $fieldcell->text = html_writer::tag('div', $fieldcellcontent, [
                     'data-collapse' => 'content'
                 ]);
 
@@ -1096,7 +1125,9 @@ class grade_report_grader extends grade_report {
                             // If we're rendering this as a number field, set min/max attributes, if applicable.
                             if ($context->isnumeric) {
                                 $context->minvalue = $item->grademin ?? null;
-                                $context->maxvalue = $item->grademax ?? null;
+                                if (empty($CFG->unlimitedgrades)) {
+                                    $context->maxvalue = $item->grademax ?? null;
+                                }
                             }
 
                             $value = format_float($gradeval, $decimalpoints);
@@ -1220,6 +1251,8 @@ class grade_report_grader extends grade_report {
         foreach ($leftrows as $key => $row) {
             $row->cells = array_merge($row->cells, $rightrows[$key]->cells);
             $fulltable->data[] = $row;
+            unset($leftrows[$key]);
+            unset($rightrows[$key]);
         }
         $html .= html_writer::table($fulltable);
         return $OUTPUT->container($html, 'gradeparent');
@@ -1910,7 +1943,8 @@ class grade_report_grader extends grade_report {
 
         foreach ($extrafields as $field) {
             $attributes = [
-                'data-collapse' => 'content'
+                'data-collapse' => 'content',
+                'class' => 'py-1',
             ];
             // With additional user profile fields, we can't grab the name via WS, so conditionally add it to rip out of the DOM.
             if (preg_match(\core_user\fields::PROFILE_FIELD_REGEX, $field)) {

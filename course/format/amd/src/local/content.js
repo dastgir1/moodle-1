@@ -61,6 +61,9 @@ export default class Component extends BaseComponent {
             ACTIVITYTAG: 'li',
             SECTIONTAG: 'li',
         };
+        this.selectorGenerators = {
+            cmNameFor: (id) => `[data-cm-name-for='${id}']`,
+        };
         // Default classes to toggle on refresh.
         this.classes = {
             COLLAPSED: `collapsed`,
@@ -149,9 +152,6 @@ export default class Component extends BaseComponent {
             "scroll",
             this._scrollHandler
         );
-        setTimeout(() => {
-            this._scrollHandler();
-        }, 500);
     }
 
     /**
@@ -175,15 +175,12 @@ export default class Component extends BaseComponent {
             const toggler = section.querySelector(this.selectors.COLLAPSE);
             const isCollapsed = toggler?.classList.contains(this.classes.COLLAPSED) ?? false;
 
-            if (isChevron || isCollapsed) {
-                // Update the state.
-                const sectionId = section.getAttribute('data-id');
-                this.reactive.dispatch(
-                    'sectionContentCollapsed',
-                    [sectionId],
-                    !isCollapsed
-                );
-            }
+            const sectionId = section.getAttribute('data-id');
+            this.reactive.dispatch(
+                'sectionContentCollapsed',
+                [sectionId],
+                !isCollapsed,
+            );
         }
     }
 
@@ -230,6 +227,7 @@ export default class Component extends BaseComponent {
             {watch: `cm.sectionid:updated`, handler: this._reloadCm},
             {watch: `cm.indent:updated`, handler: this._reloadCm},
             {watch: `cm.groupmode:updated`, handler: this._reloadCm},
+            {watch: `cm.name:updated`, handler: this._refreshCmName},
             // Update section number and title.
             {watch: `section.number:updated`, handler: this._refreshSectionNumber},
             // Collapse and expand sections.
@@ -243,6 +241,23 @@ export default class Component extends BaseComponent {
             // Reindex sections and cms.
             {watch: `state:updated`, handler: this._indexContents},
         ];
+    }
+
+    /**
+     * Update a course module name on the whole page.
+     *
+     * @param {object} param
+     * @param {Object} param.element details the update details.
+     */
+    _refreshCmName({element}) {
+        // Update classes.
+        // Replace the text content of the cm name.
+        const allCmNamesFor = this.getElements(
+            this.selectorGenerators.cmNameFor(element.id)
+        );
+        allCmNamesFor.forEach((cmNameFor) => {
+            cmNameFor.textContent = element.name;
+        });
     }
 
     /**

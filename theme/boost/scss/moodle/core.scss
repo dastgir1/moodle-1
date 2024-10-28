@@ -314,12 +314,8 @@ a.autolink {
     display: none;
 }
 
-.visibleifjs {
+body:not(.jsenabled) .visibleifjs {
     display: none;
-}
-
-.jsenabled .visibleifjs {
-    display: inline;
 }
 
 .jsenabled .collapsibleregion {
@@ -393,7 +389,7 @@ img.activityicon {
 #maincontent {
     display: block;
     height: 1px;
-    overflow: hidden;
+    overflow: clip;
 }
 
 img.uihint {
@@ -2088,6 +2084,10 @@ a.disabled {
     color: $text-muted;
 }
 
+a.btn.disabled {
+    opacity: 1;
+}
+
 body.lockscroll {
     height: 100%;
     overflow: hidden;
@@ -2310,6 +2310,8 @@ $footer-link-color: $bg-inverse-link-color !default;
     a {
         color: $footer-link-color;
         text-decoration: underline;
+        padding-top: map-get($spacers, 1);
+        padding-bottom: map-get($spacers, 1);
 
         .icon {
             color: $footer-link-color;
@@ -2805,8 +2807,7 @@ $picker-emojis-per-row: 7 !default;
             border: 0;
             margin: $spacer * 0.125;
             &.active {
-                @include button-outline-variant($gray-600);
-                border-color: $gray-600;
+                @include button-outline-variant($blue, $active-border: $gray-600);
             }
         }
     }
@@ -3122,7 +3123,14 @@ blockquote {
     margin: 0 0.5rem 1rem;
     padding-left: 1rem;
     color: $gray-700;
-    border-left: 5px solid $gray-400;
+    border-left: 5px solid $gray-500;
+}
+
+.pagelayout-maintenance,
+.pagelayout-secure {
+    .page-header-headings {
+        background-color: $body-bg;
+    }
 }
 
 /* Prevent long strings exceeding page width */

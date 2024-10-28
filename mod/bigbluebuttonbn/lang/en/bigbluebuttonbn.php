@@ -214,10 +214,10 @@ $string['config_voicebridge_description'] = 'These settings enable or disable op
 $string['config_voicebridge_editable'] = 'Conference voice bridge can be edited';
 $string['config_voicebridge_editable_description'] = 'A conference voice bridge number can be permanently assigned to a room. When assigned, the number cannot be used for any other room.';
 
-$string['config_preuploadpresentation'] = 'Pre-upload presentation';
+$string['config_preuploadpresentation'] = 'Presentation file';
 $string['config_preuploadpresentation_description'] = 'These settings enable or disable options in the UI and also define default values for these options. The feature works only if the Moodle server is accessible to BigBlueButton.';
-$string['config_preuploadpresentation_editable'] = 'Pre-uploading presentation editable';
-$string['config_preuploadpresentation_editable_description'] = 'Preupload presentation feature is editable in the UI when the room or conference is added or updated.';
+$string['config_preuploadpresentation_editable'] = 'Presentation file on activity page';
+$string['config_preuploadpresentation_editable_description'] = 'Option in activity settings to upload presentation file to show on activity page.';
 
 $string['config_presentation_default'] = 'Default presentation file';
 $string['config_presentation_default_description'] = 'A file may be provided for use in all rooms.';
@@ -261,7 +261,7 @@ $string['config_muteonstart_default_description'] = 'If enabled the session will
 $string['config_muteonstart_editable'] = 'Mute on start can be edited';
 $string['config_muteonstart_editable_description'] = 'Mute on start by default can be edited when the instance is added or updated.';
 $string['config_welcome_default'] = 'Default welcome message';
-$string['config_welcome_default_description'] = 'The welcome message is displayed when participants enter the room. If the field is left blank, then a message set on the BigBlueButton server is displayed.';
+$string['config_welcome_default_description'] = 'The welcome message is displayed when participants enter the room. If the field is left blank, the language string \'mod_form_field_welcome_default\' is used.';
 $string['config_welcome_editable'] = 'Default welcome message is editable by teachers';
 $string['config_welcome_editable_description'] = 'Welcome message can be edited when the instance is added or updated';
 $string['config_default_messages'] = 'Default messages';

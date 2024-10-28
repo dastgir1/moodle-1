@@ -10,7 +10,7 @@ Feature: Allow teachers to edit the default activity completion rules in a cours
       | Course 1 | C1        | 0        | 1                |
     And the following "users" exist:
       | username | firstname | lastname | email |
-      | teacher1 | Teacher | Frist | teacher1@example.com |
+      | teacher1 | Teacher | First | teacher1@example.com |
     And the following "course enrolments" exist:
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
@@ -29,13 +29,19 @@ Feature: Allow teachers to edit the default activity completion rules in a cours
     And I set the field "Course completion tertiary navigation" to "Default activity completion"
     And I click on "Expand Assignment" "button"
     And I set the following fields to these values:
-      | Add requirements         | 1                  |
-      | completionview_assign     | 0                                                 |
-      | completionusegrade_assign | 1                                                 |
-      | completionsubmit_assign   | 1                                                 |
+      | id_completion_assign_2    | 1 |
+      | completionview_assign     | 1 |
+      | completionusegrade_assign | 1 |
+      | completionsubmit_assign   | 1 |
     And I should not see "Cancel" in the "[data-region='activitycompletion-forum']" "css_element"
     And I click on "Save changes" "button" in the "[data-region='activitycompletion-assign']" "css_element"
     Then I should see "Changes saved"
+    And I navigate to "Course completion" in current page administration
+    And I set the field "Course completion tertiary navigation" to "Default activity completion"
+    And I click on "Expand Assignment" "button"
+    And I set the following fields to these values:
+      | completionview_assign     | 0 |
+    And I click on "Save changes" "button" in the "[data-region='activitycompletion-assign']" "css_element"
     And I am on "Course 1" course homepage with editing mode on
     And I press "Add an activity or resource"
     And I click on "Add a new Assignment" "link" in the "Add an activity or resource" "dialogue"
@@ -222,3 +228,10 @@ Feature: Allow teachers to edit the default activity completion rules in a cours
     When I navigate to "Course completion" in current page administration
     And I set the field "Course completion tertiary navigation" to "Default activity completion"
     Then "Survey" "text" should appear before "Text and media area" "text"
+
+  @accessibility
+  Scenario: Evaluate the accessibility of the default activity completion page
+    Given I am on the "Course 1" course page logged in as "teacher1"
+    When I navigate to "Course completion" in current page administration
+    And I set the field "Course completion tertiary navigation" to "Default activity completion"
+    And the page should meet accessibility standards

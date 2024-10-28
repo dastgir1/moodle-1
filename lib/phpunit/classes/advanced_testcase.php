@@ -65,7 +65,7 @@ abstract class advanced_testcase extends base_testcase {
      * @return void
      */
     final public function runBare(): void {
-        global $DB;
+        global $CFG, $DB;
 
         if (phpunit_util::$lastdbwrites != $DB->perf_get_writes()) {
             // this happens when previous test does not reset, we can not use transactions
@@ -79,21 +79,18 @@ abstract class advanced_testcase extends base_testcase {
         try {
             $this->setCurrentTimeStart();
             parent::runBare();
-            // set DB reference in case somebody mocked it in test
-            $DB = phpunit_util::get_global_backup('DB');
-
-            // Deal with any debugging messages.
-            $debugerror = phpunit_util::display_debugging_messages(true);
-            $this->resetDebugging();
-            if (!empty($debugerror)) {
-                trigger_error('Unexpected debugging() call detected.'."\n".$debugerror, E_USER_NOTICE);
-            }
-
         } catch (Exception $ex) {
             $e = $ex;
         } catch (Throwable $ex) {
             // Engine errors in PHP7 throw exceptions of type Throwable (this "catch" will be ignored in PHP5).
             $e = $ex;
+        } finally {
+            // Reset global state after test and test failure.
+            $CFG = phpunit_util::get_global_backup('CFG');
+            $DB = phpunit_util::get_global_backup('DB');
+
+            // We need to reset the autoloader.
+            \core_component::reset();
         }
 
         if (isset($e)) {
@@ -102,7 +99,14 @@ abstract class advanced_testcase extends base_testcase {
             throw $e;
         }
 
-        if (!$this->testdbtransaction or $this->testdbtransaction->is_disposed()) {
+        // Deal with any debugging messages.
+        $debugerror = phpunit_util::display_debugging_messages(true);
+        $this->resetDebugging();
+        if (!empty($debugerror)) {
+            trigger_error('Unexpected debugging() call detected.' . "\n" . $debugerror, E_USER_NOTICE);
+        }
+
+        if (!$this->testdbtransaction || $this->testdbtransaction->is_disposed()) {
             $this->testdbtransaction = null;
         }
 
@@ -399,7 +403,8 @@ abstract class advanced_testcase extends base_testcase {
     }
 
     /**
-     * Assert that an event is not using event->contxet.
+     * Assert that various event methods are not using event->context
+     *
      * While restoring context might not be valid and it should not be used by event url
      * or description methods.
      *
@@ -419,7 +424,7 @@ abstract class advanced_testcase extends base_testcase {
         $event->get_url();
         $event->get_description();
 
-        // Restore event->context.
+        // Restore event->context (note that this is unreachable when the event uses context). But ok for correct events.
         phpunit_event_mock::testable_set_event_context($event, $eventcontext);
     }
 
@@ -736,5 +741,39 @@ abstract class advanced_testcase extends base_testcase {
             $task->execute();
             \core\task\manager::adhoc_task_complete($task);
         }
+    }
+
+    /**
+     * Convenience method to load a fixture from a component's fixture directory.
+     *
+     * @param string $component
+     * @param string $path
+     * @throws coding_exception
+     */
+    protected static function load_fixture(
+        string $component,
+        string $path,
+    ): void {
+        $fullpath = sprintf(
+            "%s/tests/fixtures/%s",
+            \core_component::get_component_directory($component),
+            $path,
+        );
+        if (!file_exists($fullpath)) {
+            throw new \coding_exception("Fixture file not found: $fullpath");
+        }
+
+        global $ADMIN;
+        global $CFG;
+        global $DB;
+        global $SITE;
+        global $USER;
+        global $OUTPUT;
+        global $PAGE;
+        global $SESSION;
+        global $COURSE;
+        global $SITE;
+
+        require_once($fullpath);
     }
 }

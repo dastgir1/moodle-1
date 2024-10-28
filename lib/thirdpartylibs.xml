@@ -22,7 +22,7 @@
     <licenseversion>2.0</licenseversion>
     <repository>https://github.com/dequelabs/axe-core</repository>
     <copyrights>
-      <copyright>2005, Jon Papaioannou</copyright>
+      <copyright>Deque Systems, Inc.</copyright>
     </copyrights>
   </library>
   <library>
@@ -514,7 +514,7 @@ All rights reserved.</copyright>
   </library>
   <library>
     <location>php-jwt</location>
-    <name>A simple library to encode and decode JSON Web Tokens (JWT) in PHP, conforming to RFC 7519</name>
+    <name>PHP-JWT</name>
     <description>A simple library to encode and decode JSON Web Tokens (JWT) in PHP, conforming to RFC 7519</description>
     <version>6.8.1</version>
     <license>BSD</license>

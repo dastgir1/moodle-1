@@ -183,12 +183,7 @@ class graded_users_iterator {
             }
         }
 
-        $userfieldsapi = \core_user\fields::for_identity($coursecontext, false)->with_userpic();
-        $userfields = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
-
-        // This need to be fixed - webservices in grade/report/user/classes/external/user.php don't check permission properly.
-        $userfields .= ', u.idnumber, u.institution, u.department';
-
+        $userfields = 'u.*';
         $customfieldssql = '';
         if ($this->allowusercustomfields && !empty($CFG->grade_export_customprofilefields)) {
             $customfieldscount = 0;
@@ -222,7 +217,8 @@ class graded_users_iterator {
         $this->users_rs = $DB->get_recordset_sql($users_sql, $params);
 
         if (!$this->onlyactive) {
-            $this->suspendedusers = get_suspended_userids($coursecontext);
+            $context = context_course::instance($this->course->id);
+            $this->suspendedusers = get_suspended_userids($context);
         } else {
             $this->suspendedusers = array();
         }
@@ -989,7 +985,8 @@ function print_grade_page_head(int $courseid, string $active_type, ?string $acti
         $renderer = $PAGE->get_renderer('core_grades');
         // If the user is viewing their own grade report, no need to show the "Message"
         // and "Add to contact" buttons in the user heading.
-        $showuserbuttons = $user->id != $USER->id;
+        $showuserbuttons = $user->id != $USER->id && !empty($CFG->messaging) &&
+            has_capability('moodle/site:sendmessage', $PAGE->context);
         $output = $renderer->user_heading($user, $courseid, $showuserbuttons);
     } else if (!empty($heading)) {
         $output = $OUTPUT->heading($heading);
@@ -2225,7 +2222,8 @@ class grade_structure {
                         }
 
                         $url = new moodle_url('/mod/' . $itemmodule . '/grade.php', $args);
-                        $title = get_string('advancedgrading', 'gradereport_grader', $itemmodule);
+                        $title = get_string('advancedgrading', 'gradereport_grader',
+                            get_string('pluginname', "mod_{$itemmodule}"));
                         $gpr->add_url_params($url);
                         return html_writer::link($url, $title,
                             ['class' => 'dropdown-item', 'aria-label' => $title, 'role' => 'menuitem']);

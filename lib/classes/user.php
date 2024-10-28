@@ -266,29 +266,32 @@ class core_user {
             $index++;
         }
 
-        $identitysystem = has_capability('moodle/site:viewuseridentity', $systemcontext);
         $usingshowidentity = false;
-        if ($identitysystem) {
-            // They have permission everywhere so just add the extra query to the normal query.
-            $where .= ' OR ' . $extrasql;
-            $whereparams = array_merge($whereparams, $extraparams);
-        } else {
-            // Get all courses where user can view full user identity.
-            list($sql, $params) = self::get_enrolled_sql_on_courses_with_capability(
+        // Only do this code if there actually are some identity fields being searched.
+        if ($extrasql) {
+            $identitysystem = has_capability('moodle/site:viewuseridentity', $systemcontext);
+            if ($identitysystem) {
+                // They have permission everywhere so just add the extra query to the normal query.
+                $where .= ' OR ' . $extrasql;
+                $whereparams = array_merge($whereparams, $extraparams);
+            } else {
+                // Get all courses where user can view full user identity.
+                list($sql, $params) = self::get_enrolled_sql_on_courses_with_capability(
                     'moodle/site:viewuseridentity');
-            if ($sql) {
-                // Join that with the user query to get an extra field indicating if we can.
-                $userquery = "
+                if ($sql) {
+                    // Join that with the user query to get an extra field indicating if we can.
+                    $userquery = "
                         SELECT innerusers.id, COUNT(identityusers.id) AS showidentity
                           FROM ($userquery) innerusers
                      LEFT JOIN ($sql) identityusers ON identityusers.id = innerusers.id
                       GROUP BY innerusers.id";
-                $userparams = array_merge($userparams, $params);
-                $usingshowidentity = true;
+                    $userparams = array_merge($userparams, $params);
+                    $usingshowidentity = true;
 
-                // Query on the extra fields only in those places.
-                $where .= ' OR (users.showidentity > 0 AND (' . $extrasql . '))';
-                $whereparams = array_merge($whereparams, $extraparams);
+                    // Query on the extra fields only in those places.
+                    $where .= ' OR (users.showidentity > 0 AND (' . $extrasql . '))';
+                    $whereparams = array_merge($whereparams, $extraparams);
+                }
             }
         }
 
@@ -1412,21 +1415,13 @@ class core_user {
         // Params to be passed to the user view page.
         $params = ['id' => $user->id];
 
-        // Get courseid if provided.
-        if (isset($options['courseid'])) {
-            $params['courseid'] = $options['courseid'];
-        }
-
         // Get courseid from context if provided.
-        if ($context) {
-            $coursecontext = $context->get_course_context(false);
-            if ($coursecontext) {
-                $params['courseid'] = $coursecontext->instanceid;
-            }
+        if ($context && $coursecontext = $context->get_course_context(false)) {
+            $params['course'] = $coursecontext->instanceid;
         }
 
         // If courseid is not set or is set to site id, then return profile page, otherwise return view page.
-        if (!isset($params['courseid']) || $params['courseid'] == SITEID) {
+        if (!isset($params['course']) || $params['course'] == SITEID) {
             return new moodle_url('/user/profile.php', $params);
         } else {
             return new moodle_url('/user/view.php', $params);

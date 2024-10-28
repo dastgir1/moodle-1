@@ -19,6 +19,7 @@ namespace core;
 /**
  * Test core_user class.
  *
+ * @covers \core_user
  * @package    core
  * @copyright  2013 Rajesh Taneja <rajesh@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -281,6 +282,36 @@ class user_test extends \advanced_testcase {
         $this->assertCount(0, $result);
         $result = \core_user::search('house@x.x');
         $this->assertCount(1, $result);
+    }
+
+    /**
+     * The search function had a bug where it failed if you have no identify fields (or only custom
+     * ones).
+     */
+    public function test_search_no_identity_fields(): void {
+        self::init_search_tests();
+
+        // Set no user identity fields.
+        set_config('showuseridentity', '');
+
+        // Set up course for test with teacher in.
+        $generator = $this->getDataGenerator();
+        $course = $generator->create_course();
+        $teacher = $generator->create_user(['firstname' => 'Alberto', 'lastname' => 'Unwin',
+            'email' => 'a.unwin@x.x']);
+        $generator->enrol_user($teacher->id, $course->id, 'teacher');
+
+        // Admin user has site-wide permissions, this uses one variant of the query.
+        $this->setAdminUser();
+        $result = \core_user::search('Al');
+        $this->assertCount(1, $result);
+        $this->assertEquals('Alberto', $result[0]->firstname);
+
+        // Teacher has course-wide permissions, this uses another variant.
+        $this->setUser($teacher);
+        $result = \core_user::search('Al');
+        $this->assertCount(1, $result);
+        $this->assertEquals('Alberto', $result[0]->firstname);
     }
 
     /**
@@ -861,7 +892,7 @@ class user_test extends \advanced_testcase {
         // Display profile url at course context.
         $course = $this->getDataGenerator()->create_course();
         $coursecontext = \context_course::instance($course->id);
-        $this->assertEquals("https://www.example.com/moodle/user/view.php?id={$user->id}&amp;courseid={$course->id}",
+        $this->assertEquals("https://www.example.com/moodle/user/view.php?id={$user->id}&amp;course={$course->id}",
             \core_user::get_profile_url($user, $coursecontext));
 
         // Throw error if userid is invalid.
@@ -886,7 +917,8 @@ class user_test extends \advanced_testcase {
         // Display profile picture.
         $context = \context_system::instance();
         // No image, show initials.
-        $this->assertStringContainsString("<span class=\"userinitials size-35\">JD</span></a>",
+        $this->assertStringContainsString(
+            "<span class=\"userinitials size-35\" title=\"John Doe\" aria-label=\"John Doe\" role=\"img\">JD</span></a>",
             $OUTPUT->render(\core_user::get_profile_picture($user1, $context)));
         // With Image.
         $expectedimagesrc = $CFG->wwwroot . '/pluginfile.php/' . \context_user::instance($user2->id)->id .
@@ -896,12 +928,14 @@ class user_test extends \advanced_testcase {
 
         // Display profile picture with options.
         $options = ['size' => 50, 'includefullname' => true];
-        $this->assertStringContainsString("<span class=\"userinitials size-50\">JD</span>John Doe</a>",
+        $this->assertStringContainsString(
+            "<span class=\"userinitials size-50\" title=\"John Doe\" aria-label=\"John Doe\" role=\"img\">JD</span>John Doe</a>",
             $OUTPUT->render(\core_user::get_profile_picture($user1, $context, $options)));
 
         // Display profile picture with options, no link.
         $options = ['link' => false];
-        $this->assertEquals("<span class=\"userinitials size-35\">JD</span>",
+        $this->assertEquals(
+            "<span class=\"userinitials size-35\" title=\"John Doe\" aria-label=\"John Doe\" role=\"img\">JD</span>",
             $OUTPUT->render(\core_user::get_profile_picture($user1, $context, $options)));
     }
 
