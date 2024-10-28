@@ -96,10 +96,10 @@ class restore_externship_activity_structure_step extends restore_activity_struct
 
         // Insert the externship_data record into the database
         $newitemid = $DB->insert_record('externship_data', $data);
-        $this->set_mapping('externship_data', $data->id, $newitemid);
+        // $this->set_mapping('externship_data', $data->id, $newitemid);
 
         // Add related files for this externship_data record
-        $this->add_related_files('mod_externship', 'file', null, $newitemid);
+        // $this->add_related_files('mod_externship', 'file', null, $newitemid);
     }
 
    
