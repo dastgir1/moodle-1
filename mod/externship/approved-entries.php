@@ -23,21 +23,23 @@
  */
 
 require('../../config.php');
-$cmid = required_param('id', PARAM_INT);
-
-$PAGE->requires->js("/mod/externship/js/search.js");
 require_once($CFG->libdir.'/csvlib.class.php');
 require_login();
 
 $url = new moodle_url('/mod/externship/approved-entries.php', []);
 $PAGE->set_url($url);
 $PAGE->set_context(context_system::instance());
+$PAGE->set_title('Approved Entries');
 $PAGE->set_pagelayout('standard');
-// $PAGE->set_heading($SITE->fullname);
+// $PAGE->set_heading($externship->name);
+// $PAGE->navbar->add($externship->name, new moodle_url('/mod/externship/view.php', array('id' => $cm->id)));
+// $PAGE->navbar->add('Approved Entries');
+$PAGE->requires->js("/mod/externship/js/jquery.min.js");
+$PAGE->requires->js("/mod/externship/js/search.js");
 echo $OUTPUT->header();
+$cmid = required_param('id', PARAM_INT);
+$name = required_param('name', PARAM_TEXT);
 $page = optional_param('page',0 , PARAM_INT);
-
-
 $perpage = optional_param('perpage', 10, PARAM_INT);
 $totalcount = $DB->count_records_sql("SELECT COUNT(DISTINCT userid) FROM {externship_data} WHERE approval = 1");
 $coursemodules=$DB->get_records('course_modules',['id'=>$cmid]);
@@ -53,38 +55,23 @@ if ($start > $totalcount) {
 }
  // Fetch the data from the database
  $timerecords = $DB->get_records_sql("
- SELECT od.userid,od.cmid,od.starttime,od.endtime,od.clinicname,od.preceptorname,od.description, u.firstname, u.lastname, cm.course, SUM(od.duration) AS total_duration
+ SELECT od.userid,od.cmid, u.firstname, u.lastname, cm.course, SUM(od.duration) AS total_duration
  FROM {externship_data} od
  JOIN {course_modules} cm ON od.cmid = cm.id
  JOIN {user} u ON u.id = od.userid
  WHERE cm.id = :cmid AND od.approval = 1
  GROUP BY od.userid, u.firstname, u.lastname, cm.course
-", ['cmid' => $cmid]);
+", ['cmid' => $cmid],$start, $perpage);
 
 
 foreach($timerecords as $timerecord){
-    $totalhour = ($timerecord->total_duration/60)/60;
-    $totaltime =  $totalhour.' hours';
+    $durationhour     = intval(intval($timerecord->total_duration) / 3600);
+    $durationminute   = intval((intval($timerecord->total_duration) - $durationhour * 3600) /60);
+    $totaltime =  $durationhour.' Hours '.$durationminute.' Minutes';
     $username =$timerecord->firstname. ' '.$timerecord->lastname;
     $userid = $timerecord->userid;
     $moduleid=$timerecord->cmid;
-    $starttime = date('l jS \of F Y h:i:s A',$timerecord->starttime);
-    $endtime = date('l jS \of F Y h:i:s A',$timerecord->endtime);
-   
-    $durationHours = floor(($timerecord->total_duration / 60)/60);
-    $durationMinutes = ($timerecord->total_duration / 60) % 60;
-    $duration = $durationHours .' Hours '.$durationMinutes.' Minutes';
-   
-    $approvedata[] = [
-    'userid'=>$userid,
-    'username'=> $username,
-    'totaltime'=>$duration,
-    'clinicname'=>$timerecord->clinicname,
-    'preceptorname'=>$timerecord->preceptorname,
-    'description'=>$timerecord->description,
-    'starttime'=>$starttime,
-    'endtime'=>$endtime,
-];
+    $approvedata[] = ['userid'=>$userid,'username'=> $username,'totaltime'=>$totaltime];
 
 }
 
@@ -93,10 +80,11 @@ if (!isset($approvedata) || !is_array($approvedata)) {
     $approvedata = [];
 }
 
+
 // Render the template with the processed approved data
 echo $OUTPUT->render_from_template(
     'mod_externship/approved-entries', 
-    ['approvedata' => array_values($approvedata), 'id' => $cmid]
+    ['approvedata' => array_values($approvedata), 'id' => $cmid,'name'=>$name]
 );
 
 $baseurl = new moodle_url('/mod/externship/approved-entries.php');

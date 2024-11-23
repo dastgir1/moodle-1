@@ -22,12 +22,14 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 global $PAGE;
-$PAGE->requires->js("/mod/externship/js/jquery.min.js");
-$PAGE->requires->js("/mod/externship/js/script.js");
 defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__.'/../../config.php');
 require_once(dirname(__FILE__).'/../../lib/outputrenderers.php');
-require_once($CFG->libdir.'/accesslib.php');
+require_once(dirname(__FILE__).'/../../lib/accesslib.php');
+require_once(dirname(__FILE__).'/../../lib/filelib.php');
+$PAGE->requires->js('/mod/externship/js/jquery.min.js');
+$PAGE->requires->js('/mod/externship/js/script.js');
+
 /**
  * 
  * @param object $externship
@@ -38,6 +40,7 @@ require_login();
 function externship_get_list ($externship, $see_all, $editing = true) {
     global $OUTPUT,$DB,$USER;
    $coursemoduleid= required_param('id',PARAM_INT);
+   
   $course_module = $DB->get_record('course_modules',['id'=>$coursemoduleid]);
   
   $externships = $DB->get_records('externship',['course'=>$course_module->course]);
@@ -47,16 +50,15 @@ function externship_get_list ($externship, $see_all, $editing = true) {
     $result = <<<EOD
     <table id="externship_list_table" cellpadding="5" rules="rows" frame="below">
     <col width="50" />
-    <caption><a href="externshipform.php?externshipid=$externship->id" class="btn btn-primary rounded " style="float:right;">$add_new_string</a></caption>
-    <input type="search" class="border rounded p-2" id="search" placeholder="Search Here..."/>
+    <caption><a class="btn btn-primary rounded float-right" href="externshipform.php?externshipid=$externship->id">$add_new_string</a></caption>
+    <input type="search" class="border rounded p-2" id="search" placeholder="Search here..."/>
     EOD;
-    $rows = $DB->get_records('externship_data', array('cmid' => $coursemoduleid), 'starttime DESC');
+
+ 
+    $rows = $DB->get_records('externship_data', array('cmid' => $coursemoduleid), 'starttime DESC' );
 
     if (empty($rows))
-        return "
-   
-    <a href=\"externshipform.php?externshipid=$externship->id\" class=\"btn btn-primary rounded \" style=\"float:right;\">$add_new_string</a>
-    ";
+        return "<div style=\"text-align:center\"><a class='btn btn-primary rounded float-right' href=\"externshipform.php?externshipid=$externship->id\">$add_new_string</a></div>";
     foreach ($rows as $row) {
         if ((!$see_all) && ($USER->id != $row->userid)) continue;
         if ($first_row) $result .= externship_get_list_table_title ($row, $editing);
@@ -70,7 +72,7 @@ function externship_get_list ($externship, $see_all, $editing = true) {
 
 
 function externship_get_list_table_title ($row, $editing) {
-  
+    // $result = "\t<thead>\n";
     $result = "\t<tr>\n";
     if ($editing) $result .= "\t\t<th>" . get_string("actions", 'externship') . "</th>\n"; // editing cell title: blank
     foreach ($row as $name => $data) {
@@ -85,14 +87,17 @@ function externship_get_list_table_title ($row, $editing) {
                 $result .= "\t\t<th>" . get_string("description", 'externship') . "</th>\n";
                 break;
             default:
+            
                 $result .= "\t\t<th>" . get_string($name, 'externship') . "</th>\n";
+           
         }
     }
     $result .= "\t\t<th>" . get_string('status', 'externship') . "</th>\n";
-    $result .= "\t\t<th>" . get_string('comment', 'externship') . "</th>\n";
+    $result .= "\t\t<th>" . get_string('comments', 'externship') . "</th>\n";
     $result .= "\t\t<th>" . get_string('file', 'externship') . "</th>\n";
+    $result .= "\t\t<th>" . get_string('permission', 'externship') . "</th>\n";
     $result .= "\t</tr>\n";
-    
+    // $result .= "\t</thead>\n";
     return $result;
 }
 
@@ -107,7 +112,7 @@ function externship_get_list_table_row($row, $editing) {
     $context = context_course::instance($courseid->course); 
     $student_role_id=5;
     // Start building the table row
-   
+    // $result = "\t<tbody id='entrytable'>\n";
     $result = "\t<tr>\n";
     
     // If editing is enabled, show edit and delete icons
@@ -159,6 +164,10 @@ function externship_get_list_table_row($row, $editing) {
                 $date = format_time($data);
                 $result .= "\t\t<td>$date</td>\n";
                 break;
+            case 'description':
+                
+                $result .= "\t\t<td>$row->description</td>\n";
+                break;
            
            
             default:
@@ -184,14 +193,14 @@ function externship_get_list_table_row($row, $editing) {
         $result .= "\t\t<td>";
         $result .='<form action="add_comment.php?id=' . $row->id . '&cmid='.$cmid .'" method="post">';
         $result .= "<textarea  name='comment' class='border rounded d-block my-2' placeholder='Enter comment' rows='1' cols='14'></textarea>";
-        $result .= '<button type="submit" class="btn btn-primary " name="submit" value="' . $row->id . '">Add Comment</button>';
+        $result .= '<button type="submit" class="btn btn-primary p-2 rounded" name="submit" value="' . $row->id . '">Add Comment</button>';
         $result .='</form>';
         $comment = $DB->get_record('externship_data',['id'=>$row->id]);
          $result .=''.$comment->comments.'';
         $result .= "</td>\n";
     }else{
         $comment = $DB->get_record('externship_data',['id'=>$row->id]);
-        // print_object($comment->comments);
+       
         $result .= "\t\t<td>";
         $result .= "<div id='showcomment' >$comment->comments</div>";
     
@@ -210,45 +219,68 @@ function externship_get_list_table_row($row, $editing) {
     $cm             = get_coursemodule_from_instance('externship', $externship->id, $course->id, false, MUST_EXIST);
     $cm_context = context_module::instance($cm->id);
     $fs = get_file_storage();
-    $files = $fs->get_area_files($cm_context->id , 'mod_externship', 'file',$row->id);
-    // foreach ($files as $file) {
-    //     // Check if the file is not the directory placeholder ('.').
-    //     if ($file->get_filename() !== '.') {
-    //         // Generate the download URL using Moodle's pluginfile.php.
-    //         $download_url = moodle_url::make_pluginfile_url(
-    //             $file->get_contextid(),
-    //             $file->get_component(),
-    //             $file->get_filearea(),
-    //             $file->get_itemid(),
-    //             $file->get_filepath(),
-    //             $file->get_filename()
-    //         )->out();  // Convert to URL string.
+    // $files = $fs->get_area_files($cm_context->id , 'mod_externship', 'file',$row->id);
+    $files = $fs->get_area_files($cm_context->id, 'mod_externship', 'file', $row->id, 'sortorder DESC', false);
+ 
     
-    //         // Print the download URL or do any other processing.
-    //         // print_object($download_url);
-    //     }
-    // }
-    $file= end($files);
-   
-   
-    if ($file && !$file->is_directory()) {
+    $download_url = '';
+    foreach ($files as $file) {
+        // Check if the file is not the directory placeholder ('.').
+        if ($file->get_filename() !== '.') {
+            // Generate the download URL using Moodle's pluginfile.php.
+            $download_url = moodle_url::make_pluginfile_url(
+                $file->get_contextid(),
+                $file->get_component(),
+                $file->get_filearea(),
+                $file->get_itemid(),
+                $file->get_filepath(),
+                $file->get_filename()
+                )->out();  // Convert to URL string.
+                
+                // Print the download URL or do any other processing.
+                
+            }
+            
+        }
        
-        $download_url = moodle_url::make_pluginfile_url(
-            $file->get_contextid(),
-            $file->get_component(),
-            $file->get_filearea(),
-            $file->get_itemid(),
-            $file->get_filepath(),
-            $file->get_filename()
-        )->out();
-    } else {
-        // Default picture URL or handle missing picture.
-        $download_url = null;
+    // $file= end($files);
+   
+   
+    // if ($file && !$file->is_directory()) {
+       
+    //     $download_url = moodle_url::make_pluginfile_url(
+    //         $file->get_contextid(),
+    //         $file->get_component(),
+    //         $file->get_filearea(),
+    //         $file->get_itemid(),
+    //         $file->get_filepath(),
+    //         $file->get_filename()
+    //     )->out();
+    // } else {
+    //     // Default picture URL or handle missing picture.
+    //     $download_url = null;
+    // }
+  
+    $result .= "\t\t<td>";
+    $extension = pathinfo($download_url, PATHINFO_EXTENSION); // Get the file extension
+
+    // Set default variables for icon and preview
+    $icon = '';
+    $preview = '';
+
+    if (in_array($extension, ['png', 'jpg', 'jpeg'])) {
+        $icon = $download_url; // Use the image itself as the icon
+        $preview = 'preview'; // Set preview attribute for images
+    } elseif ($extension == 'pdf') {
+        $icon = '/mod/externship/pix/pdf.jpg'; // Path to your PDF icon
+        $preview = ''; // No preview for PDF
+    } elseif (in_array($extension, ['doc', 'docx'])) {
+        $icon = '/mod/externship/pix/word (1).jpg'; // Path to your Word icon
+        $preview = ''; // No preview for Word document
     }
     
-    $result .= "\t\t<td>";
-        $result .='<a href="'.$download_url.'" preview="">
-            <img src="'.$download_url.'" alt="Download Image" width="50" height="50"/>
+        $result .='<a href="'.$download_url.'" '.$preview.'>
+            <img src="'.$icon.'" alt="Download Image" width="50" height="50"/>
         </a>';
     $result .= "</td>\n";
     // Adding the approve button conditionally based on the capability
@@ -270,6 +302,7 @@ function externship_get_list_table_row($row, $editing) {
     // Close the table row
     
     $result .= "\t</tr>\n";
+    // $result .= "\t</tbody>\n";
    
     return $result;
 }

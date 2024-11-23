@@ -26,7 +26,7 @@
 
 <nav aria-label="breadcrumb" class="mb-5" id="breadcrumb">
   <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a class="text-decoration-none" href="/mod/externship/view.php?id={{id}}">{{#str}}entrypage,externship{{/str}}</a></li>
+    <li class="breadcrumb-item"><a class="text-decoration-none" href="/mod/externship/view.php?id={{id}}">{{name}}</a></li>
     <li class="breadcrumb-item active" aria-current="page">{{#str}}approved,externship{{/str}} </li>
   </ol>
 </nav>
@@ -36,15 +36,14 @@
             <div class="card">
                 <div class="card-header">
                  <h3 class="text-center">{{#str}}approvedentry,externship{{/str}} </h3>
-                 <input type="search" id="search" placeholder="Search Here..." class="border rounded p-2"/>
-                 <a href="/mod/externship/export_csv.php?id={{id}}"><button type="submit" class="btn btn-primary rounded  " style="float:right;">Export to csv </button></a>
+                 <input type="search" id="search" placeholder="Search Here..."/>
+                 <a href="/mod/externship/export_csv.php?id={{id}}"><button type="submit" class="btn btn-primary rounded " style="float:right;">Export to csv </button></a>
                 </div>
                 <div class="card-body">
-                    <table class="table table-strapped" >
+                    <table class="table table-strapped">
                      <tr>
                         <th>{{#str}}userid,externship{{/str}}</th>
                         <th>{{#str}}username,externship{{/str}}</th>
-                      
                         <th>{{#str}}totaltime,externship{{/str}}</th>
                     </tr>
                     <tbody id="entrytable">
@@ -52,7 +51,6 @@
                             <tr>
                                 <td>{{userid}}</td>
                                 <td>{{username}}</td>
-                              
                                 <td>{{totaltime}}</td>
                             </tr>
                         {{/approvedata}}

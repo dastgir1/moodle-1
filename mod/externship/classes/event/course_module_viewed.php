@@ -28,10 +28,10 @@ class course_module_viewed extends \core\event\course_module_viewed {
     /**
      * Init method.
      */
-    protected function init() {
-        parent::init();
-        $this->data['objecttable'] = 'externship';
-    }
+    // protected function init() {
+    //     parent::init();
+    //     $this->data['objecttable'] = 'externship';
+    // }
 
     /**
      * Creates an instance of event

@@ -63,23 +63,7 @@ function xmldb_externship_upgrade($oldversion) {
         // Externship savepoint reached.
         upgrade_mod_savepoint(true, 2024100401, 'externship');
     }
-    // if ($oldversion < 2024101304) {
-
-    //     // Define table externship to be created.
-    //     $table = new xmldb_table('externship_data');
-     
-    //     $table->add_field('clinicname', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, 'file');
-    //     $table->add_field('preceptorname', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, 'clinicname');
-    //     $table->add_field('endtime', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'starttime');
-
-    //     if (!$dbman->table_exists($table)) {
-    //         $dbman->create_table($table);
-    //     }
-
-    //     // Externship savepoint reached.
-    //     upgrade_mod_savepoint(true, 2024101304, 'externship');
-    // }
-    if ($oldversion < 2024101305) {
+    if ($oldversion < 2024101303) {
 
         // Define the table we want to update.
         $table = new xmldb_table('externship_data');
@@ -95,16 +79,52 @@ function xmldb_externship_upgrade($oldversion) {
         }
 
         // Update the plugin version to the new version.
+        upgrade_mod_savepoint(true, 2024101303, 'externship');
+    }
+    if ($oldversion < 2024101304) {
+
+        // Define the table we want to update.
+        $table = new xmldb_table('externship_data');
+
+        // Define the new field/column with its specifications.
+        // $field = new xmldb_field('approval', XMLDB_TYPE_TEXT, null, null, null, 0, null, 'description');
+        $field = new xmldb_field('clinicname', XMLDB_TYPE_CHAR, '500', null, XMLDB_NOTNULL, null, null,'file');
+       
+        // Check if the field already exists to avoid errors.
+        if (!$dbman->field_exists($table, $field)) {
+            // Add the new field to the table.
+            $dbman->add_field($table, $field);
+        }
+
+        // Update the plugin version to the new version.
+        upgrade_mod_savepoint(true, 2024101304, 'externship');
+    }
+    if ($oldversion < 2024101305) {
+
+        // Define the table we want to update.
+        $table = new xmldb_table('externship_data');
+
+        // Define the new field/column with its specifications.
+        // $field = new xmldb_field('approval', XMLDB_TYPE_TEXT, null, null, null, 0, null, 'description');
+        $field = new xmldb_field('preceptorname', XMLDB_TYPE_CHAR, '500', null, XMLDB_NOTNULL, null, null,'clinicname');
+       
+        // Check if the field already exists to avoid errors.
+        if (!$dbman->field_exists($table, $field)) {
+            // Add the new field to the table.
+            $dbman->add_field($table, $field);
+        }
+
+        // Update the plugin version to the new version.
         upgrade_mod_savepoint(true, 2024101305, 'externship');
     }
-    if ($oldversion < 2024101307) {
+    if ($oldversion < 2024101306) {
 
         // Define the table we want to update.
         $table = new xmldb_table('externship_data');
 
         // Define the new field/column with its specifications.
         // $field = new xmldb_field('approval', XMLDB_TYPE_TEXT, null, null, null, 0, null, 'description');
-        $field = new xmldb_field('clinicname', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null);
+        $field = new xmldb_field('comments', XMLDB_TYPE_CHAR, '500', null, XMLDB_NOTNULL, null, null,'preceptorname');
        
         // Check if the field already exists to avoid errors.
         if (!$dbman->field_exists($table, $field)) {
@@ -113,44 +133,7 @@ function xmldb_externship_upgrade($oldversion) {
         }
 
         // Update the plugin version to the new version.
-        upgrade_mod_savepoint(true, 2024101307, 'externship');
+        upgrade_mod_savepoint(true, 2024101306, 'externship');
     }
-    if ($oldversion < 2024101308) {
-
-        // Define the table we want to update.
-        $table = new xmldb_table('externship_data');
-
-        // Define the new field/column with its specifications.
-        // $field = new xmldb_field('approval', XMLDB_TYPE_TEXT, null, null, null, 0, null, 'description');
-        $field = new xmldb_field('preceptorname', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null);
-       
-        // Check if the field already exists to avoid errors.
-        if (!$dbman->field_exists($table, $field)) {
-            // Add the new field to the table.
-            $dbman->add_field($table, $field);
-        }
-
-        // Update the plugin version to the new version.
-        upgrade_mod_savepoint(true, 2024101308, 'externship');
-    }
-    if ($oldversion < 2024101600) {
-
-        // Define the table we want to update.
-        $table = new xmldb_table('externship_data');
-
-        // Define the new field/column with its specifications.
-        // $field = new xmldb_field('approval', XMLDB_TYPE_TEXT, null, null, null, 0, null, 'description');
-        $field = new xmldb_field('comments', XMLDB_TYPE_CHAR, '250', null, XMLDB_NOTNULL, null, null,'preceptorname');
-       
-        // Check if the field already exists to avoid errors.
-        if (!$dbman->field_exists($table, $field)) {
-            // Add the new field to the table.
-            $dbman->add_field($table, $field);
-        }
-
-        // Update the plugin version to the new version.
-        upgrade_mod_savepoint(true, 2024101600, 'externship');
-    }
-
     return true;
 }

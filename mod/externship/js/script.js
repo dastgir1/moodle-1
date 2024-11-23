@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 $(document).ready(function () {
-  
+ 
     $('#search').on('keyup',function(){
         var searchtext = $(this).val().toLowerCase();
         
@@ -21,29 +21,34 @@ $(document).ready(function () {
             $(this).toggle($(this).text().toLowerCase().indexOf(searchtext) > -1); 
           });
     });
-  
+    
+    
     $('#id_starthour, #id_startminute, #id_endhour, #id_endminute').on('change', function() {
         
         // Get the values of the inputs
         var startHour = parseInt($('#id_starthour').val()) || 0;
+        
         var startMinute = parseInt($('#id_startminute').val()) || 0;
         var endHour = parseInt($('#id_endhour').val()) || 0;
         var endMinute = parseInt($('#id_endminute').val()) || 0;
         // Convert the start and end times to minutes
         var startTimeInMinutes = (startHour * 60) + startMinute;
         var endTimeInMinutes = (endHour * 60) + endMinute;
+        
         // Calculate the duration in minutes
         var durationInMinutes = endTimeInMinutes - startTimeInMinutes;  
         // Handle case when the end time is earlier than the start time (e.g., overnight time)
-        if (durationInMinutes < 0) {
-            durationInMinutes += 24 * 60; // Add 24 hours in minutes
-        }
+        // if (durationInMinutes < 0) {
+        //     durationInMinutes += 24 * 60; // Add 24 hours in minutes
+        // }
     
         // Convert the duration to hours and minutes
         var durationHours = Math.floor(durationInMinutes / 60);
+       
         var durationMinutes = durationInMinutes % 60;
     
         if(endTimeInMinutes > startTimeInMinutes){
+            
             $('#id_duration').val(durationHours + ' hours ' + durationMinutes + ' minutes');
             $('#custom-div-id').text('');
         }else{
@@ -53,5 +58,5 @@ $(document).ready(function () {
         }
       
     });
-  
+    
 });

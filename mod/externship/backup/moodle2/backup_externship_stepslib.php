@@ -46,12 +46,10 @@ class backup_externship_activity_structure_step extends backup_activity_structur
             'course', 'name', 'intro', 'introformat', 'timecreated', 'timemodified',
         ));
 
-       
+
         $externship_data = new backup_nested_element('externship_data', array('id'), array(
             'externshipid', 'userid', 'starttime','endtime', 'duration', 'description', 'approval', 'file','clinicname','preceptorname','comments'
         ));
-        // If there are images (assuming stored in mdl_files), use files element
-        // $files = new backup_nested_element('files');
 
         // Build the tree by adding externship_data_rec as a child of externship_data and externship_data as a child of externship.
         $externship->add_child($externship_data);
@@ -61,31 +59,17 @@ class backup_externship_activity_structure_step extends backup_activity_structur
         $externship->set_source_table('externship', array('id' => backup::VAR_ACTIVITYID));
 
         // If user information is included, get all relevant entries from externship_data.
-        if ($userinfo) {
-            $externship_data->set_source_sql('
-                SELECT id, externshipid, userid, starttime,endtime, duration, description, approval, file,clinicname,preceptorname,comments
-                  FROM {externship_data}
-                 WHERE externshipid = ?',
-                array(backup::VAR_PARENTID));
-        } 
-        else {
-            // If no user information, backup the externship data without user details.
-            $externship_data->set_source_sql('
-                SELECT id, externshipid, starttime,endtime, duration, description, approval, file,clinicname,preceptorname,comments
-                  FROM {externship_data}
-                 WHERE externshipid = ?',
-                array(backup::VAR_PARENTID));
-        }
-     // Include file areas (assuming externship data has image files)
-        //  $files->set_source_table('files', array('itemid' => backup::VAR_PARENTID, 'filearea' => 'file'));
+        $externship_data->set_source_table('externship_data', array('externshipid' => backup::VAR_PARENTID));
+
+
         // Define ID annotations to handle user data in the externship_data.
         $externship_data->annotate_ids('user', 'userid');
 
         // Define file annotations for the externship intro area.
         $externship->annotate_files('mod_externship', 'intro', null);
-        
+
         // Define file annotations for user-uploaded files in externship_data.
-        $externship_data->annotate_files('mod_externship', 'file', null);
+        $externship_data->annotate_files('mod_externship', 'file',null);
 
         // Return the prepared activity structure for backup.
         return $this->prepare_activity_structure($externship);

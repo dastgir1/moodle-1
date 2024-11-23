@@ -78,7 +78,7 @@ class restore_externship_activity_structure_step extends restore_activity_struct
 
         // Map the externshipid to the new one (parent ID)
         $data->externshipid = $this->get_new_parentid('externship');
-
+        // $data->id = $this->get_mappingid('externship_data', $data->itemid);
         // Map the userid if necessary (handling the mapping of users)
         $data->userid = $this->get_mappingid('user', $data->userid);
 
@@ -96,13 +96,9 @@ class restore_externship_activity_structure_step extends restore_activity_struct
 
         // Insert the externship_data record into the database
         $newitemid = $DB->insert_record('externship_data', $data);
-        // $this->set_mapping('externship_data', $data->id, $newitemid);
+        $this->set_mapping('externship_data', $oldid, $newitemid,true);
 
-        // Add related files for this externship_data record
-        // $this->add_related_files('mod_externship', 'file', null, $newitemid);
     }
-
-   
 
     /**
      * Helper function to get the module ID of the 'externship' activity.
@@ -118,16 +114,18 @@ class restore_externship_activity_structure_step extends restore_activity_struct
 
         return $moduleid;
     }
-
+   
     /**
      * After executing this step, perform post-execution tasks.
      */
     protected function after_execute() {
-        // parent::after_execute();
+       
+        parent::after_execute();
         $this->add_related_files('mod_externship', 'intro', null);
- 
-        $this->add_related_files('mod_externship', 'file',null);
+       
+        $this->add_related_files('mod_externship', 'file','externship_data');
     }
+
 }
 
 

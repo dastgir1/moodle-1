@@ -24,16 +24,16 @@
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="externshipid"/>
         <FIELD NAME="externshipid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="id" NEXT="userid"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="externshipid" NEXT="starttime"/>
-        <FIELD NAME="starttime" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="userid" NEXT="endtime"/>
+        <FIELD NAME="starttime" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="userid" NEXT="duration"/>
         <FIELD NAME="endtime" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="starttime" NEXT="duration"/>
-        <FIELD NAME="duration" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="endtime" NEXT="cmid"/>
+        <FIELD NAME="duration" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="starttime" NEXT="cmid"/>
         <FIELD NAME="cmid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="duration" NEXT="description"/>
         <FIELD NAME="description" TYPE="char" LENGTH="500" NOTNULL="false" SEQUENCE="false" PREVIOUS="cmid"/>
          <FIELD NAME="approval" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" UNSIGNED="true" SEQUENCE="false" PREVIOUS="description"/>
          <FIELD NAME="file" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" UNSIGNED="true" SEQUENCE="false" PREVIOUS="approval"/>
-       <FIELD NAME="clinicname" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" PREVIOUS="file"/>
-       <FIELD NAME="preceptorname" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" PREVIOUS="clinicname"/>
-       <FIELD NAME="comments" TYPE="char" LENGTH="250" NOTNULL="false" SEQUENCE="false" PREVIOUS="preceptorname"/>
+        <FIELD NAME="clinicname" TYPE="char" LENGTH="500" NOTNULL="false" SEQUENCE="false" PREVIOUS="file"/>
+        <FIELD NAME="preceptorname" TYPE="char" LENGTH="500" NOTNULL="false" SEQUENCE="false" PREVIOUS="clinicname"/>
+        <FIELD NAME="comments" TYPE="char" LENGTH="500" NOTNULL="false" SEQUENCE="false" PREVIOUS="preceptorname"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

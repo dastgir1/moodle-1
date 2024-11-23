@@ -58,12 +58,11 @@ class externshipform extends \moodleform{
             $default_year  =  $starttime_obj['year'];
             $default_starthour        = $starttime_obj['hours'];
             $default_startminute      = $starttime_obj['minutes'];
-            $default_endhour       = $endtime_obj['hours'];
-            $default_endminute       = $endtime_obj['minutes'];
+            $default_endhour        = $endtime_obj['hours'];
+            $default_endminute      = $endtime_obj['minutes'];
+           
             // $default_durationhour     = intval(intval($externship_data->duration) / 3600);
             // $default_durationminute   = intval((intval($externship_data->duration) - $default_durationhour * 3600) /60);
-            // $default_duration = $default_durationhour .' Hours '.$default_durationminute.' Minuts'; 
-            // $externship_data->duration =$default_duration;
             $default_description      = $externship_data->description;
             if ($externship_data->cmid) $default_cmid = $externship_data->cmid;
                 else $default_cmid = '0';
@@ -71,69 +70,60 @@ class externshipform extends \moodleform{
             $default_day   =  $now['mday'];
             $default_month =  $now['mon'];
             $default_year  =  $curryear;
-            $default_starthour      = '0';
+            $default_starthour      = '00';
             $default_startminute    = '00';
-            $default_endhour      = '0';
+            $default_endhour      = '00';
             $default_endminute    = '00';
             $default_durationhour   = '0';
             $default_durationminute = '00';
             $default_description    = '';
             $default_cmid = '0';
         }
+        $mform->addElement('text', 'clinicname', get_string('clinicname','externship'),['placeholder' => get_string('enterclinicname', 'externship')]);
+       
+        $mform->setType('clinicname', PARAM_TEXT);
 
-        $mform->addElement('text', 'clinicname', get_string('clinicname', 'externship'));
-        $mform->setType('clinicname', PARAM_NOTAGS);
-        // $mform->setDefault('clinicname', 'Enter Clinic Name');
-
-        $mform->addElement('text', 'preceptorname', get_string('preceptorname', 'externship'));
-        $mform->setType('preceptorname', PARAM_NOTAGS);
-        // $mform->setDefault('preceptorname', 'Enter Preceptor Name');
+        $mform->addElement('text', 'preceptorname', get_string('preceptorname','externship'),['placeholder' => get_string('enterpreceptorname', 'externship')]);
+        $mform->setType('preceptorname', PARAM_TEXT);
 
         $stimearray=array();
-        $stimearray[]=& $mform->createElement('select', 'month', '', $months);
-        $mform->setType('month', PARAM_INT);
-        $mform->setDefault('month', $default_month);
         $stimearray[]=& $mform->createElement('select', 'day', '', $days);
         $mform->setDefault('day', $default_day);
         $mform->setType('day', PARAM_INT);
+        $stimearray[]=& $mform->createElement('select', 'month', '', $months);
+        $mform->setType('month', PARAM_INT);
+        $mform->setDefault('month', $default_month);
         $stimearray[]=& $mform->createElement('select', 'year', '', $years);
         $mform->setType('year', PARAM_INT);
         $mform->setDefault('year', $default_year);
         $mform->addGroup( $stimearray,'timearr',get_string('date', 'externship') ,' ',false);
 
-        // Start time group
-        $stimearray = array();
-        $stimearray[] = $mform->createElement('select', 'starthour', '', $hours);
+        $stimearray=array();
+        $stimearray[]=& $mform->createElement('select', 'starthour', '', $hours);
         $mform->setDefault('starthour', $default_starthour);
         $mform->setType('starthour', PARAM_INT);
-
-        $stimearray[] = $mform->createElement('select', 'startminute', '', $minutes);
+        $stimearray[]=& $mform->createElement('select', 'startminute', '', $minutes);
         $mform->setDefault('startminute', $default_startminute);
         $mform->setType('startminute', PARAM_INT);
+        $mform->addGroup( $stimearray,'timearr',get_string('starttime', 'externship') ,' ',false);
 
-        $mform->addGroup($stimearray, 'starttimearr', get_string('starttime', 'externship'), ' ', false);
-        // $mform->addRule('starttime', get_string('required', 'externship'), 'required', null, 'client');
-
-        // End time group
-        $etimearray = array();
-        $etimearray[] = $mform->createElement('select', 'endhour', '', $hours);
+        $stimearray=array();
+        $stimearray[]=& $mform->createElement('select', 'endhour', '', $hours);
         $mform->setDefault('endhour', $default_endhour);
         $mform->setType('endhour', PARAM_INT);
-
-        $etimearray[] = $mform->createElement('select', 'endminute', '', $minutes);
+        $stimearray[]=& $mform->createElement('select', 'endminute', '', $minutes);
         $mform->setDefault('endminute', $default_endminute);
         $mform->setType('endminute', PARAM_INT);
+        $mform->addGroup( $stimearray,'timearr',get_string('endtime', 'externship') ,' ',false);
 
-        $mform->addGroup($etimearray, 'endtimearr', get_string('endtime', 'externship'), ' ', false);
         $html = '<p id="custom-div-id"></p>';
         $mform->addElement('html', $html);
 
-        $mform->addElement('text', 'duration', get_string('duration', 'externship'));
-        $mform->setType('duration', PARAM_NOTAGS);
-        $mform->setDefault('duration', '');
-
+        $mform->addElement('text', 'duration', get_string('duration','externship'),['placeholder' => get_string('enterduration', 'externship')]);
+        $mform->setType('duration', PARAM_TEXT); 
+        
     
-        $mform->addElement('textarea', 'description', get_string('description', 'externship'));
+        $mform->addElement('textarea', 'description', get_string('description', 'externship'),['placeholder' => get_string('enterdescription', 'externship')]);
         $mform->setType('description', PARAM_RAW);
         $mform->setDefault('description', $default_description);
         // $maxbytes = get_max_upload_sizes();
@@ -155,36 +145,15 @@ class externshipform extends \moodleform{
         $mform->addRule('file', get_string('required', 'externship'), 'required', null, 'client');
 
         $this->add_action_buttons();
-      
     }
 
-    // * Custom validation function for form elements.
+    // Custom validation should be added here.
+    function validation($data, $files) {
+        $errors = parent::validation($data, $files);
+        // if (!is_numeric($data['id'])) {
+        //     $errors['id'] = get_string('err_numeric', 'offlinesession');
+        // }
+        return $errors;
+    }
     
-   public function validation($data, $files) {
-       $errors = parent::validation($data, $files);
-   
-       // Check that start time and end time are present in the form data
-       if (isset($data['starthour']) && isset($data['startminute']) && isset($data['endhour']) && isset($data['endminute'])) {   
-           // Retrieve start and end time data
-           $starthour = $data['starthour'];
-           $startminute = $data['startminute'];
-           $endhour = $data['endhour'];
-           $endminute = $data['endminute'];
-   
-           // Convert start and end times to minutes for easier comparison
-           $start_time_in_minutes = ($starthour * 60) + $startminute;
-           $end_time_in_minutes = ($endhour * 60) + $endminute;
-   
-           // Validate that end time is greater than start time
-           if ($end_time_in_minutes <= $start_time_in_minutes) {
-               $errors['endtimearr'] = get_string('error_endtime_greater', 'externship'); // Custom error message
-           }
-       } else {
-           // Handle missing time fields if necessary
-           $errors['endtimearr'] = get_string('error_missing_time_fields', 'externship');
-       }
-   
-       return $errors;
-   }
-
 }

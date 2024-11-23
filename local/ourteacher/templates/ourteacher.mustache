@@ -1,0 +1,82 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_ourteacher/ourteacher
+
+    Page layout used to display our teacher pages on moodle.local.
+
+    Context variables required for this template:
+    * output - The core renderer for the page
+
+    Example context (json):
+    {
+    "output": {
+            "doctype": "<!DOCTYPE html>",
+            "page_title": "ourteacher",
+            "favicon": "favicon.ico",
+            "main_content": "<h1>Headings make html validators happier</h1>"
+         }
+    }   
+}}
+
+<!-- our Adviser Section -->
+<div class="container adviser-sect">
+    <div class="row ">
+        <div class="col-md-12 text-center">
+            <h3 class="section-title bg-white text-center text-success px-3 animated slideInDown py-3"> our teacher</h3>
+        </div>
+    </div>
+    <div class="row">
+        
+        {{# teachers}}
+
+            <div class="col-md-4 wow fadeInUp " data-wow-delay="{{delay}}">
+             
+
+                <div class="card mt-4 service-item ">
+                    <img src="{{picurl}}" class="card-img-top animated slideInDown" alt="...">
+
+                    <div class="card-body">
+                        <h5 class="card-title text-center ">
+                            <a href="{{link}}" class="animated slideInDown">
+                                {{firstname}} {{lastname}}
+                            </a>
+                        </h5>
+                        <p class="card-text lead text-center animated slideInDown">
+                            <strong>Summary of Qualifications:</strong>
+                        </p>
+                        <p>
+                            <ul>
+                                <li class="animated slideInDown">
+                                    {{{qualification}}}
+                                </li>
+                                <li>
+                                    <p>
+                                        <strong>Average rating:{{avgrating}}</strong>
+                                    </p>
+                                </li>
+                            </ul>
+                        </p>
+                        
+                       
+                    </div>
+                </div>
+            </div>
+            
+        {{/ teachers}}
+    </div>
+</div>

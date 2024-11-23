@@ -44,7 +44,7 @@ class edit_data extends \core\event\base {
     }
     
     public function get_url() {
-        return new \moodle_url('/mod/externship/externshipform.php', array('dataid' => $this->objectid, 'externshipid' => $this->get_data()['other']['externshipid']));
+        return new \moodle_url('/mod/externship/edit.php', array('dataid' => $this->objectid, 'externshipid' => $this->get_data()['other']['externshipid']));
     }
 }
 

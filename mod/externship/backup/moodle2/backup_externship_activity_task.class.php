@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 // More information about the backup process: {@link https://docs.moodle.org/dev/Backup_API}.
 // More information about the restore process: {@link https://docs.moodle.org/dev/Restore_API}.
-    require_once($CFG->dirroot . '/mod/externship/backup/moodle2/backup_externship_settingslib.php');
+
 require_once($CFG->dirroot.'/mod/externship/backup/moodle2/backup_externship_stepslib.php');
 
 /**
@@ -71,10 +71,6 @@ class backup_externship_activity_task extends backup_activity_task {
         // Encode link to externship view by module ID.
         $search = "/(" . $base . "\/mod\/externship\/view.php\?id\=)([0-9]+)/";
         $content = preg_replace($search, '$@EXTERNSHIPVIEWBYID*$2@$', $content);
-
-          // Encode link to files associated with the externship activity.
-        $search = "/(" . $base . "\/pluginfile.php\/)([0-9]+)\/mod_externship\/file\/([0-9]+)\/(.+?)\//";
-        $content = preg_replace($search, '$@EXTERNSHIPFILE*$2*$3*$4*$5@$', $content);
 
         return $content;
     }

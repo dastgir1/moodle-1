@@ -23,12 +23,13 @@
  */
 
 require('../../config.php');
-$PAGE->requires->js("/mod/externship/js/jquery.min.js");
-$PAGE->requires->js("/mod/externship/js/script.js");
+
 require_once("$CFG->libdir/formslib.php");
 require_once(dirname(__FILE__).'/lib.php');
 // require_once(dirname(__FILE__).'/locallib.php');
 // require_once($CFG->dirroot.'/mod/externship/form/externshipform.php');
+$PAGE->requires->js("/mod/externship/js/jquery.min.js");
+$PAGE->requires->js("/mod/externship/js/script.js");
 $dataid = optional_param('dataid',0,PARAM_INT);
 
 $externshipid = optional_param('externshipid',0,PARAM_INT);
@@ -46,14 +47,15 @@ $context = context_module::instance($cm->id);
 
 require_login();
 
-$url = new moodle_url('/mod/externship/externshipform.php', ['courseid' => $course->id]);
+$url = new moodle_url('/mod/externship/externshipform.php', []);
 $PAGE->set_url($url);
-$PAGE->set_context(context_course::instance($course->id));
+$PAGE->set_context(context_system::instance());
 $PAGE->set_title('Externship Form');
 $PAGE->set_pagelayout('standard');
 $PAGE->set_heading($externship->name);
 $PAGE->navbar->add($externship->name, new moodle_url('/mod/externship/view.php', array('id' => $cm->id)));
 $PAGE->navbar->add('Externship Form');
+
 // Instantiate the myform form from within the plugin.
 $mform = new \mod_externship\form\externshipform(null,['dataid'=>$dataid,'externshipid'=>$externshipid]);
 
@@ -61,8 +63,9 @@ $mform = new \mod_externship\form\externshipform(null,['dataid'=>$dataid,'extern
 if ($mform->is_cancelled()) {
 //  redirect('/mod/externship/view.php');
 } else if ($data = $mform->get_data()) {
-    $durationarray= str_split($data->duration,2);
-    $durationsecods = ($durationarray[0]*60)*60+($durationarray[4]*60);
+    $durationarray=explode(' ',$data->duration);
+
+    $durationsecods = ($durationarray[0]*3600)+($durationarray[2]*60);
 
    $externship_record = new stdClass();
    if ($dataid) $externship_record->id=$dataid;
@@ -70,12 +73,13 @@ if ($mform->is_cancelled()) {
    $externship_record->userid = $USER->id;
    $externship_record->starttime=mktime ($data->starthour, $data->startminute, 0, $data->month, $data->day, $data->year);
    $externship_record->endtime=mktime ($data->endhour, $data->endminute, 0, $data->month, $data->day, $data->year);
-   $externship_record->duration = $durationsecods;
+//    $externship_record->duration = $data->durationhour * 3600 + $data->durationminute *60;
    $externship_record->cmid = $cm->id;
+   $externship_record->duration = $durationsecods;
    $externship_record->description = $data->description;
+   $externship_record->file = $data->file;
    $externship_record->clinicname = $data->clinicname;
    $externship_record->preceptorname = $data->preceptorname;
-   $externship_record->file = $data->file;
    if (!$dataid) {
        $externship_record->id = $DB->insert_record('externship_data', $externship_record);
        if (!$externship_record->id) notice(get_string("unabletoaddexzternshipdata", 'externship'));
@@ -123,39 +127,34 @@ if ($mform->is_cancelled()) {
         ];
     } else {
         $entry = $DB->get_record('externship_data', ['id' => $dataid]);
+   
+        // Get an unused draft itemid which will be used for this form.
+        $draftitemid = file_get_submitted_draft_itemid('file');
+
+        file_prepare_draft_area(
+            // The $draftitemid is the target location.
+            $draftitemid,
+
+            $context->id,
+            'mod_externship',
+            'file',
+            $entry->id,
+            [
+                'subdirs' => 0,
+                'maxbytes' => $CFG->maxbytes,
+                'maxfiles' => 1,
+            ]
+        );
+
+        // Set the itemid of draft area that the files have been moved to.
+        $entry->id = $dataid;
+        $entry->file = $draftitemid;
+        $durationhour     = intval(intval($entry->duration) / 3600);
+        $durationminute   = intval((intval($entry->duration) - $durationhour * 3600) /60);
+        $entry->duration = $durationhour.' Hours '.$durationminute.' Minutes';
+        $mform->set_data($entry);
     }
-
-    // Get an unused draft itemid which will be used for this form.
-    $draftitemid = file_get_submitted_draft_itemid('file');
-
-    // Copy the existing files which were previously uploaded
-    // into the draft area used by this form.
-    file_prepare_draft_area(
-        // The $draftitemid is the target location.
-        $draftitemid,
-
-        $context->id,
-        'mod_externship',
-        'file',
-        $entry->id,
-        [
-            'subdirs' => 0,
-            'maxbytes' => $CFG->maxbytes,
-            'maxfiles' => 1,
-        ]
-    );
-
-    // Set the itemid of draft area that the files have been moved to.
-    $durationhours =intval(floor($entry->duration/3600));
-    $durationminute   = intval((intval($entry->duration) - $durationhours * 3600) /60);
-    $entry->id = $dataid;
-    $entry->file = $draftitemid;
-    $entry->duration = $durationhours.' Hours '.$durationminute.' Minutes';
-    
-
-    $mform->set_data($entry);
 }
 echo $OUTPUT->header();
-
 $mform->display();
 echo $OUTPUT->footer();

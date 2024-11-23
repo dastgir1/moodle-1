@@ -23,8 +23,8 @@
  */
 
 require('../../config.php');
-$PAGE->requires->js("/mod/externship/js/jquery.min.js");
-$PAGE->requires->js("/mod/externship/js/script.js");
+// $PAGE->requires->js("/mod/externship/js/jquery.min.js");
+// $PAGE->requires->js("/mod/externship/js/script.js");
 
 require_login();
 
@@ -37,8 +37,7 @@ echo $OUTPUT->header();
 // $comment = required_param('comment',PARAM_TEXT);
 $id = required_param('id',PARAM_INT);
 $cmid = required_param('cmid',PARAM_INT);
-// print_object($id);
-// print_object($cmid);
+
 if(isset($_POST['submit'])){
     $comment = $_POST['comment'];
     $newdata = new stdClass();
@@ -46,7 +45,7 @@ if(isset($_POST['submit'])){
     $newdata->comments =$comment;
     $updaterecord =$DB->update_record('externship_data',$newdata);
     if($updaterecord){
-        redirect($CFG->wwwroot.'/mod/externship/view.php?id='.$cmid, get_string("externshipdataupdated", 'externship'));
+        notice(get_string("externshipdataupdated", 'externship'),$CFG->wwwroot.'/mod/externship/view.php?id='.$cmid);
     }
    
 }

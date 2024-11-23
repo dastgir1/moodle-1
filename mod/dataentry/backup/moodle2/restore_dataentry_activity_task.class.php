@@ -14,61 +14,55 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * The task that provides a complete restore of mod_dataentry is defined here.
  *
  * @package     mod_dataentry
  * @category    backup
- * @copyright   2024 Syed Dastgir <ghulam.dastgir@gmail.com>
+ * @copyright   Copyright 2023 © PakTaleem Online Islamic School. All rights reserved.
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// More information about the backup process: {@link https://docs.moodle.org/dev/Backup_API}.
-// More information about the restore process: {@link https://docs.moodle.org/dev/Restore_API}.
-
-require_once($CFG->dirroot.'//mod/dataentry/backup/moodle2/restore_dataentry_stepslib.php');
+defined('MOODLE_INTERNAL') || die();
 
 /**
- * Restore task for mod_dataentry.
+ * dataentry restore task that provides all the settings and steps to perform one
+ * complete restore of the activity
  */
-class restore_dataentry_activity_task extends restore_activity_task {
+
+ require_once($CFG->dirroot . '/mod/dataentry/backup/moodle2/restore_dataentry_stepslib.php'); // Because it exists (must)
+
+ class restore_dataentry_activity_task extends restore_activity_task {
 
     /**
-     * Defines particular settings that this activity can have.
+     * Defines particular settings for the plugin.
      */
     protected function define_my_settings() {
-        return;
+        // No specific settings for the dataentry activity.
     }
 
     /**
-     * Defines particular steps that this activity can have.
-     *
-     * @return base_step.
+     * Define (add) particular steps this activity can have.
      */
     protected function define_my_steps() {
+        // The dataentry activity only has one structure step.
         $this->add_step(new restore_dataentry_activity_structure_step('dataentry_structure', 'dataentry.xml'));
     }
 
     /**
-     * Defines the contents in the activity that must be processed by the link decoder.
-     *
-     * @return array.
+     * Define the contents in the activity that must be processed by the link decoder.
      */
     public static function define_decode_contents() {
         $contents = array();
 
+        // Make sure 'intro' field exists in your XML.
         $contents[] = new restore_decode_content('dataentry', array('intro'), 'dataentry');
         $contents[] = new restore_decode_content('dataentry_data', array('file'), 'dataentry_data');
-
         return $contents;
     }
 
     /**
-     * Defines the decoding rules for links belonging to the activity to be executed by the link decoder.
-     *
-     * @return array.
+     * Define the decoding rules for links belonging to the activity to be executed by the link decoder.
      */
     public static function define_decode_rules() {
         $rules = array();
@@ -80,11 +74,7 @@ class restore_dataentry_activity_task extends restore_activity_task {
     }
 
     /**
-     * Defines the restore log rules that will be applied by the
-     * {@see restore_logs_processor} when restoring mod_dataentry logs. It
-     * must return one array of {@see restore_log_rule} objects.
-     *
-     * @return array.
+     * Define the restore log rules that will be applied by the restore_logs_processor when restoring dataentry logs.
      */
     public static function define_restore_log_rules() {
         $rules = array();
@@ -92,30 +82,13 @@ class restore_dataentry_activity_task extends restore_activity_task {
         $rules[] = new restore_log_rule('dataentry', 'add', 'view.php?id={course_module}', '{dataentry}');
         $rules[] = new restore_log_rule('dataentry', 'update', 'view.php?id={course_module}', '{dataentry}');
         $rules[] = new restore_log_rule('dataentry', 'view', 'view.php?id={course_module}', '{dataentry}');
-        $rules[] = new restore_log_rule('dataentry', 'choose', 'view.php?id={course_module}', '{dataentry}');
-        $rules[] = new restore_log_rule('dataentry', 'choose again', 'view.php?id={course_module}', '{dataentry}');
         $rules[] = new restore_log_rule('dataentry', 'report', 'report.php?id={course_module}', '{dataentry}');
 
         return $rules;
     }
-    /**
-     * Define the restore log rules that will be applied
-     * by the {@link restore_logs_processor} when restoring
-     * course logs. It must return one array
-     * of {@link restore_log_rule} objects
-     *
-     * Note this rules are applied when restoring course logs
-     * by the restore final task, but are defined here at
-     * activity level. All them are rules not linked to any module instance (cmid = 0)
-     */
-    static public function define_restore_log_rules_for_course() {
-        $rules = array();
 
-        // Fix old wrong uses (missing extension)
-        $rules[] = new restore_log_rule('dataentry', 'view all', 'index?id={course}', null,
-                                        null, null, 'index.php?id={course}');
-        $rules[] = new restore_log_rule('dataentry', 'view all', 'index.php?id={course}', null);
-
-        return $rules;
-    }
 }
+
+
+
+

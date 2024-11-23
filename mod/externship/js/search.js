@@ -1,5 +1,4 @@
 $(document).ready(function () {
-  
     $('#search').on('keyup',function(){
         var searchtext = $(this).val().toLowerCase();
         
@@ -7,6 +6,4 @@ $(document).ready(function () {
             $(this).toggle($(this).text().toLowerCase().indexOf(searchtext) > -1); 
           });
     });
-  
-  
 });

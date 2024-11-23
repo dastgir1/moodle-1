@@ -57,6 +57,7 @@ defined('MOODLE_INTERNAL') || die();
 
         // Make sure 'intro' field exists in your XML.
         $contents[] = new restore_decode_content('externship', array('intro'), 'externship');
+        $contents[] = new restore_decode_content('externship_data', array('file'), 'externship_data');
 
         return $contents;
     }
@@ -66,24 +67,12 @@ defined('MOODLE_INTERNAL') || die();
      */
     public static function define_decode_rules() {
         $rules = array();
-    
-        // Decode link to externship view by module ID.
+
         $rules[] = new restore_decode_rule('EXTERNSHIPVIEWBYID', '/mod/externship/view.php?id=$1', 'course_module');
-    
-        // Decode link to the externship index by course ID.
         $rules[] = new restore_decode_rule('EXTERNSHIPINDEX', '/mod/externship/index.php?id=$1', 'course');
-    
-        // Decode link to externship file image with correct placeholders for contextid, itemid, and filename.
-        $rules[] = new restore_decode_rule(
-            'EXTERNSHIPIMAGEFILE',
-            '/pluginfile.php/$1/mod_externship/$2/$3/$4/$5',
-            array('contextid', 'component', 'filearea', 'itemid', 'filename')
-        );
-    
+
         return $rules;
     }
-    
-    
 
     /**
      * Define the restore log rules that will be applied by the restore_logs_processor when restoring externship logs.
@@ -98,10 +87,9 @@ defined('MOODLE_INTERNAL') || die();
 
         return $rules;
     }
-
-
+  
+   
 }
-
 
 
 

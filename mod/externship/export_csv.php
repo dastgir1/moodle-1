@@ -40,13 +40,15 @@ global $USER; // Ensure the global user object is accessible
 $userid = $USER->id; // Get the logged-in user's ID
 $cmid =optional_param('id', 0, PARAM_INT);
 $approved_entries= $DB->get_records_sql("
-SELECT od.userid,od.cmid,od.starttime,od.endtime,od.clinicname,od.preceptorname,od.description, u.firstname, u.lastname, cm.course, SUM(od.duration) AS total_duration
+SELECT od.userid,od.cmid, u.firstname, u.lastname, cm.course, SUM(od.duration) AS total_duration
 FROM {externship_data} od
 JOIN {course_modules} cm ON od.cmid = cm.id
 JOIN {user} u ON u.id = od.userid
 WHERE cm.id = :cmid AND od.approval = 1
 GROUP BY od.userid, u.firstname, u.lastname, cm.course
 ", ['cmid' => $cmid]);
+
+
 
 // Set the CSV filename
 $filename = 'approved_externship_data.csv';
@@ -71,12 +73,9 @@ if ($approved_entries) {
         // Create a row with the data (adjust the fields to match your table structure)
         $tduration =($entry->total_duration/60)/60;
         $total_duration= $tduration.' Hours';
-        // $starttime = date('l jS \of F Y h:i:s A',$entry->starttime);
-        // $endtime = date('l jS \of F Y h:i:s A',$entry->endtime);
         $row = array(
             $entry->userid,
             $entry->firstname.' '.$entry->lastname, // Adjust if this is different in your database
-          
             $total_duration,
              // Adjust this field based on your actual database column names
         );

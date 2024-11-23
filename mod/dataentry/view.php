@@ -121,15 +121,7 @@ if (user_has_role_assignment($USER->id, $student_role_id, $context->id)) {
 } else {
 
 }
-$context = context_module::instance($cm->id);
 
-// Check if the intro field exists and rewrite its URLs.
-// if (isset($dataentry->intro)) {
-//     $description = file_rewrite_pluginfile_urls($dataentry->intro, 'pluginfile.php', $context->id, 'mod_dataentry', 'intro', $dataentry->id);
-//     echo format_text($description, FORMAT_HTML);
-// } else {
-//     echo "No description available.";
-// }
 
 if ($dataentry->intro) { // Conditions to show the intro can change to look for own settings or whatever
     echo $OUTPUT->box(format_module_intro('dataentry', $dataentry, $cm->id), 'generalbox mod_introbox', 'dataentryintro');
@@ -227,7 +219,7 @@ if(!empty($datarecords)) {
         $table .= '</td>';
         $fs = get_file_storage();
         $files = $fs->get_area_files($context->id, 'mod_dataentry', 'file', $datarecord->id);
- 
+        $download_url='';
         foreach($files as $file){
             if($file->get_filename()!='.'&& !$file->is_directory()){
                 $download_url = moodle_url::make_pluginfile_url(
@@ -238,6 +230,9 @@ if(!empty($datarecords)) {
                     $file->get_filepath(),
                     $file->get_filename()
                 )->out();
+            }else {
+                // Default picture URL or handle missing picture.
+                $download_url = null;
             }
         }
             // print_object($download_url);

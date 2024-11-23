@@ -28,56 +28,49 @@ defined('MOODLE_INTERNAL') || die();
 // More information about the backup process: {@link https://docs.moodle.org/dev/Backup_API}.
 // More information about the restore process: {@link https://docs.moodle.org/dev/Restore_API}.
     // require_once($CFG->dirroot . '/mod/dataentry/backup/moodle2/backup_dataentry_settingslib.php');
-require_once($CFG->dirroot.'/mod/dataentry/backup/moodle2/backup_dataentry_stepslib.php');
-
-/**
- * Provides all the settings and steps to perform a complete backup of mod_dataentry.
- */
-class backup_dataentry_activity_task extends backup_activity_task {
+    require_once($CFG->dirroot . '/mod/dataentry/backup/moodle2/backup_dataentry_stepslib.php'); // Because it exists (optional)
 
     /**
-     * Defines particular settings for the plugin.
+     * choice backup task that provides all the settings and steps to perform one
+     * complete backup of the activity
      */
-    protected function define_my_settings() {
-        // UI setting for including user info (userinfo).
-        if ($this->get_setting_value('userinfo')) {
-            $this->add_setting(new backup_activity_generic_setting('userinfo', base_setting::IS_BOOLEAN, true));
+    class backup_dataentry_activity_task extends backup_activity_task {
+    
+        /**
+         * Define (add) particular settings this activity can have
+         */
+        protected function define_my_settings() {
+            // No particular settings for this activity
+            if ($this->get_setting_value('userinfo')) {
+                $this->add_setting(new backup_activity_generic_setting('userinfo', base_setting::IS_BOOLEAN, true));
+            }
+        }
+    
+        /**
+         * Define (add) particular steps this activity can have
+         */
+        protected function define_my_steps() {
+            // Choice only has one structure step
+             // Add one structure step to backup dataentry.
+        $this->add_step(new backup_dataentry_activity_structure_step('dataentry_structure', 'dataentry.xml'));
+        }
+    
+        /**
+         * Code the transformations to perform in the activity in
+         * order to get transportable (encoded) links
+         */
+        static public function encode_content_links($content) {
+            global $CFG;
+
+            $base = preg_quote($CFG->wwwroot, '/');
+    
+            // Encode link to the list of dataentry activities.
+            $search = "/(" . $base . "\/mod\/dataentry\/index.php\?id\=)([0-9]+)/";
+            $content = preg_replace($search, '$@DATAENTRYINDEX*$2@$', $content);
+    
+            // Encode link to dataentry view by module ID.
+            $search = "/(" . $base . "\/mod\/dataentry\/view.php\?id\=)([0-9]+)/";
+            $content = preg_replace($search, '$@DATAENTRYVIEWBYID*$2@$', $content);
+            return $content;
         }
     }
-
-    /**
-     * Define (add) particular steps this activity can have.
-     */
-    protected function define_my_steps() {
-        // Add one structure step to backup dataentry.
-        $this->add_step(new backup_dataentry_activity_structure_step('dataentry_structure', 'dataentry.xml'));
-    }
-
-    /**
-     * Codes the transformations to perform in the activity in order to get transportable (encoded) links.
-     *
-     * @param string $content
-     * @return string
-     */
-    public static function encode_content_links($content) {
-        global $CFG;
-
-        $base = preg_quote($CFG->wwwroot, '/');
-
-        // Encode link to the list of dataentry activities.
-        $search = "/(" . $base . "\/mod\/dataentry\/index.php\?id\=)([0-9]+)/";
-        $content = preg_replace($search, '$@DATAENTRYINDEX*$2@$', $content);
-
-        // Encode link to dataentry view by module ID.
-        $search = "/(" . $base . "\/mod\/dataentry\/view.php\?id\=)([0-9]+)/";
-        $content = preg_replace($search, '$@DATAENTRYVIEWBYID*$2@$', $content);
-
-          // Encode link to files associated with the dataentry activity.
-        $search = "/(" . $base . "\/pluginfile.php\/)([0-9]+)\/mod_dataentry\/file\/([0-9]+)\/(.+?)\//";
-        $content = preg_replace($search, '$@DATAENTRYFILE*$2*$3*$4*$5@$', $content);
-
-        return $content;
-    }
-}
-
-

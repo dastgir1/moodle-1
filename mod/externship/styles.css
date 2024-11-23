@@ -62,32 +62,39 @@
 
 .offlinesessioneditform.mform #fitem_id_durationminute {
     margin-bottom: 20px;
-}
+ }
 
-table#externship_list_table tbody tr td:nth-child(6) {
+  table#externship_list_table tbody tr th:nth-child(12) {
+  display: none;
+}  
+  table#externship_list_table tbody tr td:nth-child(12) {
+  display: none;
+}  
+ table#externship_list_table tbody tr th:nth-child(9) {
+  display: none; 
+} 
+ table#externship_list_table tbody tr td:nth-child(9) {
+  display: none;
+}   
+
+ table#externship_list_table tbody tr th:nth-child(6) {
   display: none;
 }
-table#externship_list_table tbody tr th:nth-child(6) {
+table#externship_list_table tbody tr td:nth-child(6) {
+  display: none;
+} 
+/* table#externship_list_table tbody tr td:nth-child(5) {
+  display: none;
+}
+table#externship_list_table tbody tr th:nth-child(5) {
+  display: none;
+} */
+ table#externship_list_table tbody tr th:nth-child(8) {
   display: none;
 }
 table#externship_list_table tbody tr td:nth-child(8) {
   display: none;
-}
-table#externship_list_table tbody tr th:nth-child(8) {
-  display: none;
-}
-table#externship_list_table tbody tr td:nth-child(9) {
-  display: none;
-}
-table#externship_list_table tbody tr th:nth-child(9) {
-  display: none;
-}
-table#externship_list_table tbody tr td:nth-child(12) {
-  display: none;
-}
-table#externship_list_table tbody tr th:nth-child(12) {
-  display: none;
-}
+} 
 
 #breadcrumb > .breadcrumb > li a{
   color: grey;
@@ -96,8 +103,4 @@ table#externship_list_table tbody tr th:nth-child(12) {
 #breadcrumb > .breadcrumb > li a:hover{
   color: #96352c;
  
-}
-#custom-div-id {
-
-  color:#96352c;
 }

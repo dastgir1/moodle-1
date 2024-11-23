@@ -48,11 +48,11 @@ global $PAGE;
 
 if (has_capability('mod/externship:canapproveentries', $context)) {
     $cmid =optional_param('id', 0, PARAM_INT); // Get the course module ID.
-
+$approved = get_string('approved','externship');
     echo "
     <ul class='nav nav-tabs'>
         <li class='nav-item border rounded'>
-            <a class='nav-link' href='/mod/externship/approved-entries.php?id=$cmid'>Approved Entries</a>
+            <a class='nav-link' href='/mod/externship/approved-entries.php?id=$cmid&name=$externship->name'>$approved</a>
         </li>
      
     </ul>
@@ -63,8 +63,7 @@ if (has_capability('mod/externship:canapproveentries', $context)) {
 
 // Get the module context
 $context = context_module::instance($id);
-// $courseid = $DB->get_record_sql("SELECT course FROM {course_modules} WHERE id=$cmid");
-// print_object($courseid->course);
+
 $student_role_id = 5; // Moodle's default student role ID
 
 if (user_has_role_assignment($USER->id, $student_role_id, $context->id)) {
@@ -97,15 +96,6 @@ if (user_has_role_assignment($USER->id, $student_role_id, $context->id)) {
 } else {
 
 }
-$context = context_module::instance($cm->id);
-
-// Check if the intro field exists and rewrite its URLs.
-// if (isset($externship->intro)) {
-//     $description = file_rewrite_pluginfile_urls($externship->intro, 'pluginfile.php', $context->id, 'mod_externship', 'intro', $externship->id);
-//     echo format_text($description, FORMAT_HTML);
-// } else {
-//     echo "No description available.";
-// }
 
 if ($externship->intro) { // Conditions to show the intro can change to look for own settings or whatever
     echo $OUTPUT->box(format_module_intro('externship', $externship, $cm->id), 'generalbox mod_introbox', 'externshipintro');
@@ -117,7 +107,7 @@ echo $OUTPUT->box($content, 'generalbox');
 
 
 
-// echo format_text($description, FORMAT_HTML);
+
 
 // Finish the page
 echo $OUTPUT->footer();

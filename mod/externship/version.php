@@ -26,10 +26,10 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_externship';
 $plugin->release = '0.1.0';
-$plugin->version = 2024101607;
+$plugin->version = 2024110904;
 $plugin->requires = 2021051700;
 $plugin->maturity = MATURITY_ALPHA;
 $plugin->supports = array(
     'backup' => true,
     'restore' => true
-); 
+);
