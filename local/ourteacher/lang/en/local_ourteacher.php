@@ -30,8 +30,9 @@ $string['ourteacher:addinstance'] = 'Add a new  our teacher';
 $string['ourteacher:myaddinstance'] = 'Add a new local our teacher to the My Moodle page';
 // settings.php
 $string['teachersignup'] = 'Teacher Signup';
-
-
+$string['newteacherform'] = 'New Teacher Form';
+$string['userpicture'] = 'User Picture';
+$string['userpicture_help'] = 'User Picture';
 // Unique.
 $string['required'] = 'You must supply a value here!';
 $string['maxbytes'] = 'maxbytes';
@@ -52,9 +53,5 @@ $string['CVC'] = 'Please enter CVC';
 $string['exp Month'] = 'Please enter exp month';
 $string['exp Year'] = 'Please enter exp year';
 $string['usermetadata'] = 'usermetadata';
-$string['ourteacher:managepages']='Manage pages';
-$string['ourteacher:viewpages']='View pages';
-
-
-
-
+$string['ourteacher:managepages'] = 'Manage pages';
+$string['ourteacher:viewpages'] = 'View pages';

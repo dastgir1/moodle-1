@@ -21,6 +21,7 @@
  * @author      paktaleem
  * @license    Commercial https://themeforest.net/licenses
  */
+
 namespace local_ourteacher;
 
 /* Add your custom code here..*/
@@ -28,22 +29,24 @@ namespace local_ourteacher;
 /**
  * [Description teacher_signupedit_form use for signup form and processing]
  */
-class teachersignup extends \moodleform {
+class teachersignup extends \moodleform
+{
 
     /**
      *
      * The definition() function defines the form elements.
      *
      */
-    public function definition() {
+    public function definition()
+    {
 
         global $DB, $CFG, $PAGE, $USER, $context, $instance, $imsid;
-			
-		$mform = $this->_form;		
+
+        $mform = $this->_form;
 
         $mform->addElement('header', 'teachersignup', get_string('teachersignup', 'local_ourteacher'));
 
-		/* TEXTBOX (HIDDEN)
+        /* TEXTBOX (HIDDEN)
 		   userid:Userid
 		   Rule types: No rules (optional).
 		 */
@@ -61,44 +64,38 @@ class teachersignup extends \moodleform {
         $mform->setType('firstname', PARAM_TEXT);
         $mform->addRule('firstname', get_string('required', 'local_ourteacher'), 'required', null, 'client');
         $mform->addHelpButton('firstname', 'firstname', 'local_ourteacher');
-        
+
         // Lastname
         $mform->addElement('text', 'lastname', get_string("lastname", "local_ourteacher"), 'wrap="virtual" rows="5" cols="5"', array('maxlength' => '700'));
         $mform->setType('lastname', PARAM_TEXT);
         $mform->addRule('lastname', get_string('required', 'local_ourteacher'), 'required', null, 'client');
         $mform->addHelpButton('lastname', 'lastname', 'local_ourteacher');
         //Qualifications
-		$mform->addElement('textarea', 'qualification', get_string("qualification", "local_ourteacher"), 'wrap="virtual" rows="5" cols="5"', array('maxlength' => '700'));
+        $mform->addElement('textarea', 'qualification', get_string("qualification", "local_ourteacher"), 'wrap="virtual" rows="5" cols="5"', array('maxlength' => '700'));
 
-		$mform->setType('qualification', PARAM_TEXT);
-		$mform->addRule('qualification', get_string('required', 'local_ourteacher'), 'required', null, 'client');
-		$mform->addHelpButton('qualification', 'qualification', 'local_ourteacher');
-		
+        $mform->setType('qualification', PARAM_TEXT);
+        $mform->addRule('qualification', get_string('required', 'local_ourteacher'), 'required', null, 'client');
+        $mform->addHelpButton('qualification', 'qualification', 'local_ourteacher');
 
-		/* UPLOAD FILE (IMAGE FORMAT)
+
+        /* UPLOAD FILE (IMAGE FORMAT)
 		   userpic:User picture.
            Rule types: User has to upload an image.
          */
-        $maxbytes=get_max_upload_sizes();
-        $mform->addElement('filepicker', 'userpic', get_string('userpic', 'local_ourteacher'), null,[ 'maxbytes' => $maxbytes, 'accepted_types' => '*', ]);
+        $maxbytes = get_max_upload_sizes();
+        $mform->addElement('filepicker', 'userpic', get_string('userpic', 'local_ourteacher'), null, ['maxbytes' => $maxbytes, 'accepted_types' => '*',]);
         $mform->addRule('userpic', get_string('required', 'local_ourteacher'), 'required', null, 'client');
         $mform->setType('image/jpg', PARAM_RAW);
         $mform->addHelpButton('userpic', 'userpic', 'local_ourteacher');
 
-		/* UPLOAD FILE (DOCUMENT FORMAT)
-		   certificate:Certificate
-           Rule types: User has to upload an certificate.
-         */
-       
 
-
-		// Action buttons.
+        // Action buttons.
         $buttonarray = array();
         $buttonarray[] = $mform->createElement('submit', 'submitbutton', get_string('submit', 'local_ourteacher'));
         $buttonarray[] = $mform->createElement('cancel');
         $mform->addGroup($buttonarray, 'buttonar', '', '', false);
-	}
-	
+    }
+
     /**
      *
      * The validation() function defines the form validation.
@@ -106,13 +103,10 @@ class teachersignup extends \moodleform {
      * @param My_Type $data
      * @param My_Type $files
      */
-    public function validation($data, $files) {
+    public function validation($data, $files)
+    {
         global $DB, $CFG;
-        $errors = parent::validation($data, $files);        
-		return $errors;
+        $errors = parent::validation($data, $files);
+        return $errors;
     }
-
 }
-
-
-

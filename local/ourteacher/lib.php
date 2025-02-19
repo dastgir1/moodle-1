@@ -23,7 +23,7 @@
  */
 /**
  * Serve the files from the myplugin file areas.
-  * @package  local_ourteacher
+ * @package  local_ourteacher
  * @param stdClass $course the course object
  * @param stdClass $cm the course module object
  * @param stdClass $context the context
@@ -121,27 +121,28 @@ function local_ourteacher_pluginfile(
  * 
  */
 
-function getTeacherRecords() {
+function getTeacherRecords()
+{
     global $DB, $CFG;
 
     $result = $DB->get_records_sql("
-        SELECT t.userid, t.qualification, t.userpic, u.firstname, u.lastname, e.courseid, c.avgrating
+        SELECT t.userid, t.qualification, t.userpic, u.firstname, u.lastname, e.courseid
         FROM {teachers} t
         JOIN {user} u ON t.userid = u.id
         JOIN {user_enrolments} ue ON ue.userid = t.userid AND ue.status = 0
         JOIN {enrol} e ON e.id = ue.enrolid
-        JOIN {tool_courserating_summary} c ON c.courseid = e.courseid
+       
     ");
 
     $teachersdata = array();
 
     // Generate the User profile pic URL.
-    foreach ($result as $r) { 
-            
+    foreach ($result as $r) {
+
         $fs = get_file_storage();
         $context = context_user::instance($r->userid);
-        $files = $fs->get_area_files($context->id , 'user', 'icon','/',0, $r->userpic);
-        $file = end($files); 
+        $files = $fs->get_area_files($context->id, 'user', 'icon', '/', 0, $r->userpic);
+        $file = end($files);
 
         if ($file) {
             // Creating picture URL.
@@ -158,12 +159,10 @@ function getTeacherRecords() {
             // Default picture URL or handle missing picture.
             $r->picurl = $CFG->wwwroot . '/pix/u/f1.png';
         }
-        
+
         $r->link = $CFG->wwwroot . '/course/info.php?id=' . $r->courseid;
-        $teachersdata[] = $r;        
+        $teachersdata[] = $r;
     }
 
     return $teachersdata;
 }
-
-

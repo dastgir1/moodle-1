@@ -23,13 +23,14 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
- defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die();
 
 /**
  * Return the set of values for Header Contents.
  * @return type|string
  */
-function header_contents() {
+function header_contents()
+{
 
     global $CFG, $PAGE, $OUTPUT, $SITE;
     $primarymenu = $OUTPUT->primarymenu();

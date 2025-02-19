@@ -30,6 +30,7 @@ $html = theme_enlightlite_get_html_for_settings($OUTPUT, $PAGE);
 
 echo $OUTPUT->doctype() ?>
 <html <?php echo $OUTPUT->htmlattributes(); ?>>
+
 <head>
     <title><?php echo $OUTPUT->page_title(); ?></title>
     <link rel="shortcut icon" href="<?php echo $OUTPUT->favicon(); ?>" />
@@ -39,35 +40,36 @@ echo $OUTPUT->doctype() ?>
 
 <body <?php echo $OUTPUT->body_attributes(); ?>>
 
-<?php echo $OUTPUT->standard_top_of_body_html() ?>
+    <?php echo $OUTPUT->standard_top_of_body_html() ?>
 
-<?php  require_once(dirname(__FILE__) . '/includes/header.php');  ?>
+    <?php require_once(dirname(__FILE__) . '/includes/header.php');  ?>
 
-<div id="page">
+    <div id="page">
 
-    <header id="page-header" class="clearfix">
-<div class="container">
-        <?php echo $html->heading; ?>
-</div>
-    </header>
+        <header id="page-header" class="clearfix">
+            <div class="container">
+                <?php echo $html->heading; ?>
+            </div>
+        </header>
 
-<div class="container">
-    <div id="page-content" class="row">
-        <div id="region-bs-main-and-pre" class="col-md-9">
-            <div class="row">
-                <section id="region-main" class="col-md-8 pull-right">
-                    <?php echo $OUTPUT->main_content(); ?>
-                </section>
-                <?php echo $OUTPUT->blocks('side-pre', 'col-md-4 desktop-first-column'); ?>
+        <div class="container">
+            <div id="page-content" class="row">
+                <div id="region-bs-main-and-pre" class="col-md-9">
+                    <div class="row">
+                        <section id="region-main" class="col-md-8 pull-right">
+                            <?php echo $OUTPUT->main_content(); ?>
+                        </section>
+                        <?php echo $OUTPUT->blocks('side-pre', 'col-md-4 desktop-first-column'); ?>
+                    </div>
+                </div>
+                <?php echo $OUTPUT->blocks('side-post', 'col-md-3'); ?>
             </div>
         </div>
-        <?php echo $OUTPUT->blocks('side-post', 'col-md-3'); ?>
+
     </div>
-</div>
 
-</div>
-
-<?php  require_once(dirname(__FILE__) . '/includes/footer.php');  ?>
+    <?php require_once(dirname(__FILE__) . '/includes/footer.php');  ?>
 
 </body>
+
 </html>

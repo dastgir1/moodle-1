@@ -27,16 +27,16 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/behat/lib.php');
 require_once($CFG->dirroot . '/course/lib.php');
-require_once($CFG->dirroot."/theme/enlightlite/classes/header_block.php");
-require_once($CFG->dirroot."/theme/enlightlite/classes/footer_block.php");
+require_once($CFG->dirroot . "/theme/enlightlite/classes/header_block.php");
+require_once($CFG->dirroot . "/theme/enlightlite/classes/footer_block.php");
 
 $OUTPUT->doctype();
 // Add block button in editing mode.
 $addblockbutton = $OUTPUT->addblockbutton();
 
-$PAGE->requires->js_call_amd('core_user/repository', 'init');
-$PAGE->requires->js_call_amd('core_user/repository', 'init');
-$PAGE->requires->js_call_amd('core_user/repository', 'init');
+$PAGE->requires->js_call_amd('core_user/repository', 'init', ['drawer-open-nav',  PARAM_ALPHA]);
+$PAGE->requires->js_call_amd('core_user/repository', 'init', ['drawer-open-nav',  PARAM_ALPHA]);
+$PAGE->requires->js_call_amd('core_user/repository', 'init', ['drawer-open-nav',  PARAM_ALPHA]);
 
 
 $templatecontext = array_merge($headercontext, $footercontext);

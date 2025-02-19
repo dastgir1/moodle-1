@@ -29,26 +29,44 @@
 /**
  * Define the complete structure for backup, with file and id annotations.
  */
-class backup_newexternship_activity_structure_step extends backup_activity_structure_step {
+class backup_newexternship_activity_structure_step extends backup_activity_structure_step
+{
 
     /**
      * Defines the structure of the resulting xml file.
      *
      * @return backup_nested_element The structure wrapped by the common 'activity' element.
      */
-    protected function define_structure() {
+    protected function define_structure()
+    {
         // Whether to include user info or not.
         $userinfo = $this->get_setting_value('userinfo');
 
         // Define each element separately, starting with the root element.
         $root = new backup_nested_element('newexternship', array('id'), array(
-            'course', 'name', 'timecreated', 'timemodified', 'intro', 'introformat'));
+            'course',
+            'name',
+            'timecreated',
+            'timemodified',
+            'intro',
+            'introformat'
+        ));
 
         // Define the child element for the newexternship data.
         $newexternship_data = new backup_nested_element('newexternship_data', array('id'), array(
-            'newexternshipid', 'userid', 'starttime', 'endtime',
-            'duration', 'cmid', 'description', 'clinicname',
-            'preceptornmae', 'approval', 'file', 'comments'));
+            'newexternshipid',
+            'userid',
+            'starttime',
+            'endtime',
+            'duration',
+            'cmid',
+            'description',
+            'clinicname',
+            'preceptorname',
+            'approval',
+            'file',
+            'comments'
+        ));
 
         // Build the tree. newexternship_data is a child of newexternship.
         $root->add_child($newexternship_data);
@@ -56,11 +74,13 @@ class backup_newexternship_activity_structure_step extends backup_activity_struc
         // Define sources. These will be the tables used to fetch data for the elements.
         $root->set_source_table('newexternship', array('id' => backup::VAR_ACTIVITYID));
 
-        $newexternship_data->set_source_sql('
+        $newexternship_data->set_source_sql(
+            '
             SELECT *
               FROM {newexternship_data}
              WHERE newexternshipid = ?',
-            array(backup::VAR_PARENTID));
+            array(backup::VAR_PARENTID)
+        );
 
         // If we are including user info, we modify the source for newexternship_data.
         if ($userinfo) {
@@ -78,4 +98,3 @@ class backup_newexternship_activity_structure_step extends backup_activity_struc
         return $this->prepare_activity_structure($root);
     }
 }
-

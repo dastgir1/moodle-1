@@ -26,17 +26,20 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/behat/lib.php');
 require_once($CFG->dirroot . '/course/lib.php');
-require_once($CFG->dirroot."/theme/enlightlite/classes/header_block.php");
-require_once($CFG->dirroot."/theme/enlightlite/classes/footer_block.php");
-require_once($CFG->dirroot. "/theme/enlightlite/layout/includes/slideshow.php");
+
+require_once($CFG->dirroot . "/theme/enlightlite/classes/header_block.php");
+require_once($CFG->dirroot . "/theme/enlightlite/classes/footer_block.php");
+require_once($CFG->dirroot . "/theme/enlightlite/layout/includes/slideshow.php");
 // Add block button in editing mode.
 $addblockbutton = $OUTPUT->addblockbutton();
 $templatecontext = array_merge($headercontext, $footercontext);
-$PAGE->requires->js_call_amd('core_user/repository', 'init');
-$PAGE->requires->js_call_amd('core_user/repository', 'init');
-$PAGE->requires->js_call_amd('core_user/repository', 'init');
-
+$PAGE->requires->js_call_amd('core_user/repository', 'init', ['drawer-open-nav',  PARAM_ALPHA]);
+$PAGE->requires->js_call_amd('core_user/repository', 'init', ['drawer-open-nav',  PARAM_ALPHA]);
+$PAGE->requires->js_call_amd('core_user/repository', 'init', ['drawer-open-nav',  PARAM_ALPHA]);
+$PAGE->requires->js_call_amd('theme_enlightlite/wow', 'init');
+$PAGE->requires->js_call_amd('theme_enlightlite/easing', 'init');
 $PAGE->requires->css(new moodle_url('/theme/enlightlite/style/slick.css'));
+
 $PAGE->requires->js_call_amd('theme_enlightlite/frontpage', 'init');
 
 if (isloggedin()) {
@@ -111,9 +114,5 @@ $templatecontext += [
     'slideconfig' => $slideconfig,
     'aboutus' => theme_enlightlite_marketingspot1(),
     'marketingspot' => theme_enlightlite_marketingspot2(),
-  
-    
-   
 ];
 echo $OUTPUT->render_from_template('theme_enlightlite/frontpage', $templatecontext);
-

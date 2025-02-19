@@ -69,7 +69,7 @@ class backup_externship_activity_structure_step extends backup_activity_structur
         $externship->annotate_files('mod_externship', 'intro', null);
 
         // Define file annotations for user-uploaded files in externship_data.
-        $externship_data->annotate_files('mod_externship', 'file',null);
+        $externship_data->annotate_files('mod_externship', 'file', null);
 
         // Return the prepared activity structure for backup.
         return $this->prepare_activity_structure($externship);

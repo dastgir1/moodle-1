@@ -27,13 +27,13 @@
  * @param moodle_page $page
  * @return null
  */
-function theme_enlightlite_page_init(moodle_page $page) {
+function theme_enlightlite_page_init(moodle_page $page)
+{
     global $CFG, $SESSION, $PAGE, $OUTPUT;
     $page->requires->jquery();
     $pattern = theme_enlightlite_get_setting('patternselect');
-    $pattern = !empty($pattern) ? 'pattern-'.$pattern : "pattern-default";
+    $pattern = !empty($pattern) ? 'pattern-' . $pattern : "pattern-default";
     $PAGE->add_body_class($pattern);
-
 }
 
 /**
@@ -44,7 +44,8 @@ function theme_enlightlite_page_init(moodle_page $page) {
  * @param string $theme
  * @return string
  */
-function theme_enlightlite_process_css($css, $theme) {
+function theme_enlightlite_process_css($css, $theme)
+{
     global $OUTPUT, $CFG;
     if (!empty($theme->settings->patternselect)) {
         $pselect = $theme->settings->patternselect;
@@ -52,10 +53,11 @@ function theme_enlightlite_process_css($css, $theme) {
         $pselect = '#39b3e6';
     }
     $customcss = !empty($theme->settings->customcss) ? $theme->settings->customcss : '';
-    $css = theme_enlightlite_custom_css($css , $customcss);
+    $css = theme_enlightlite_custom_css($css, $customcss);
     $css = theme_enlightlite_set_fontwww($css);
+
     $css = theme_enlightlite_get_pattern_color($css, $theme);
-    $css = theme_enlightlite_set_slide_opacity($theme , $css);
+    $css = theme_enlightlite_set_slide_opacity($theme, $css);
     return $css;
 }
 
@@ -64,13 +66,13 @@ function theme_enlightlite_process_css($css, $theme) {
  * @param string $css
  * @param string $customcss
  */
-function theme_enlightlite_custom_css($css , $customcss) {
+function theme_enlightlite_custom_css($css, $customcss)
+{
 
     $tag = '[[setting:customcss]]';
     $replacement = $customcss;
-    $css = str_replace($tag , $replacement , $css);
+    $css = str_replace($tag, $replacement, $css);
     return $css;
-
 }
 
 
@@ -78,12 +80,13 @@ function theme_enlightlite_custom_css($css , $customcss) {
  * Loads the CSS and set the background images.
  * @return string
  */
-function theme_enlightlite_set_bgimg() {
+function theme_enlightlite_set_bgimg()
+{
     global $CFG;
     $bgimgs = array('footbgimg' => 'footbgimg.jpg');
-    $url = $CFG->wwwroot.'/theme/enlightlite/pix/home/footbgimg.jpg';
+    $url = $CFG->wwwroot . '/theme/enlightlite/pix/home/footbgimg.jpg';
     if (file_exists($url)) {
-        $imgcss = "$footbgimg: url('".$url."');"."\n";
+        $imgcss = "$footbgimg: url('" . $url . "');" . "\n";
     } else {
         $imgcss = "";
     }
@@ -96,7 +99,8 @@ function theme_enlightlite_set_bgimg() {
  * @param string $css
  * @return string
  */
-function theme_enlightlite_set_slide_opacity($theme , $css) {
+function theme_enlightlite_set_slide_opacity($theme, $css)
+{
 
     if (!empty($theme->settings->slideOverlay_opacity)) {
         $opacity = $theme->settings->slideOverlay_opacity;
@@ -105,7 +109,7 @@ function theme_enlightlite_set_slide_opacity($theme , $css) {
     }
     $tag = '[[opacity]]';
     $replacement = $opacity;
-    $css = str_replace($tag , $replacement , $css);
+    $css = str_replace($tag, $replacement, $css);
     return $css;
 }
 
@@ -114,17 +118,18 @@ function theme_enlightlite_set_slide_opacity($theme , $css) {
  * @param string $css
  * @return string
  */
-function theme_enlightlite_set_fontwww($css) {
+function theme_enlightlite_set_fontwww($css)
+{
     global $CFG, $PAGE;
     if (empty($CFG->themewww)) {
-        $themewww = $CFG->wwwroot."/theme";
+        $themewww = $CFG->wwwroot . "/theme";
     } else {
         $themewww = $CFG->themewww;
     }
 
     $tag = '[[setting:fontwww]]';
     $theme = theme_config::load('enlightlite');
-    $css = str_replace($tag, $themewww.'/enlightlite/fonts/', $css);
+    $css = str_replace($tag, $themewww . '/enlightlite/fonts/', $css);
     return $css;
 }
 
@@ -133,17 +138,18 @@ function theme_enlightlite_set_fontwww($css) {
  * @param string $css
  * @return string
  */
-function theme_enlightlite_pre_css_set_fontwww($css) {
+function theme_enlightlite_pre_css_set_fontwww($css)
+{
     global $CFG, $PAGE;
     if (empty($CFG->themewww)) {
-        $themewww = $CFG->wwwroot."/theme";
+        $themewww = $CFG->wwwroot . "/theme";
     } else {
         $themewww = $CFG->themewww;
     }
 
     $tag = '[[setting:fontwww]]';
     $theme = theme_config::load('enlightlite');
-    $css = str_replace($tag, $themewww.'/enlightlite/fonts/', $css);
+    $css = str_replace($tag, $themewww . '/enlightlite/fonts/', $css);
     return $css;
 }
 
@@ -159,7 +165,8 @@ function theme_enlightlite_pre_css_set_fontwww($css) {
  * @param array $options
  * @return bool
  */
-function theme_enlightlite_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
+function theme_enlightlite_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array())
+{
     static $theme;
     $bgimgs = array('testimonialsbg', 'footbgimg', 'newcoursesbg', 'popularcoursesbg', 'aboutbg', 'loginbg');
 
@@ -194,7 +201,8 @@ function theme_enlightlite_pluginfile($course, $cm, $context, $filearea, $args, 
  * @param string $filename
  * @return string
  */
-function theme_enlightlite_serve_css($filename) {
+function theme_enlightlite_serve_css($filename)
+{
     global $CFG;
     if (!empty($CFG->themedir)) {
         $thestylepath = $CFG->themedir . '/enlightlite/style/';
@@ -222,7 +230,8 @@ function theme_enlightlite_serve_css($filename) {
  * @param string $etag
  *
  */
-function theme_enlightlite_send_unmodified($lastmodified, $etag) {
+function theme_enlightlite_send_unmodified($lastmodified, $etag)
+{
     $lifetime = 60 * 60 * 24 * 60;
     header('HTTP/1.1 304 Not Modified');
     header('Expires: ' . gmdate('D, d M Y H:i:s', time() + $lifetime) . ' GMT');
@@ -242,14 +251,15 @@ function theme_enlightlite_send_unmodified($lastmodified, $etag) {
  * @param integer $lastmodified
  * @param string $etag
  */
-function theme_enlightlite_send_cached_css($path, $filename, $lastmodified, $etag) {
+function theme_enlightlite_send_cached_css($path, $filename, $lastmodified, $etag)
+{
     global $CFG;
     require_once($CFG->dirroot . '/lib/configonlylib.php');
     // 60 days only - the revision may get incremented quite often.
     $lifetime = 60 * 60 * 24 * 60;
 
     header('Etag: "' . $etag . '"');
-    header('Content-Disposition: inline; filename="'.$filename.'"');
+    header('Content-Disposition: inline; filename="' . $filename . '"');
     header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $lastmodified) . ' GMT');
     header('Expires: ' . gmdate('D, d M Y H:i:s', time() + $lifetime) . ' GMT');
     header('Pragma: ');
@@ -280,7 +290,8 @@ function theme_enlightlite_send_cached_css($path, $filename, $lastmodified, $eta
  *      - heading HTML to use for the heading. A logo if one is selected or the default heading.
  *      - footnote HTML to use as a footnote. By default ''.
  */
-function theme_enlightlite_get_html_for_settings(renderer_base $output, moodle_page $page) {
+function theme_enlightlite_get_html_for_settings(renderer_base $output, moodle_page $page)
+{
     global $CFG;
     $return = new stdClass;
 
@@ -297,7 +308,7 @@ function theme_enlightlite_get_html_for_settings(renderer_base $output, moodle_p
 
     $return->footnote = '';
     if (!empty($page->theme->settings->footnote)) {
-        $return->footnote = '<div class="footnote text-center">'.format_text($page->theme->settings->footnote).'</div>';
+        $return->footnote = '<div class="footnote text-center">' . format_text($page->theme->settings->footnote) . '</div>';
     }
 
     return $return;
@@ -309,7 +320,8 @@ function theme_enlightlite_get_html_for_settings(renderer_base $output, moodle_p
  * @param string $type
  * @return string
  */
-function theme_enlightlite_get_logo_url($type='header') {
+function theme_enlightlite_get_logo_url($type = 'header')
+{
     global $OUTPUT;
     static $theme;
     if (empty($theme)) {
@@ -327,7 +339,8 @@ function theme_enlightlite_get_logo_url($type='header') {
  * @param string $sliname
  * @return null
  */
-function theme_enlightlite_render_slideimg($p, $sliname) {
+function theme_enlightlite_render_slideimg($p, $sliname)
+{
     global $PAGE, $OUTPUT;
 
     $nos = theme_enlightlite_get_setting('numberofslides');
@@ -345,7 +358,8 @@ function theme_enlightlite_render_slideimg($p, $sliname) {
  * @param bool $format
  * @return bool
  */
-function theme_enlightlite_get_setting($setting, $format = true) {
+function theme_enlightlite_get_setting($setting, $format = true)
+{
     global $CFG;
     require_once($CFG->dirroot . '/lib/weblib.php');
     static $theme;
@@ -371,9 +385,10 @@ function theme_enlightlite_get_setting($setting, $format = true) {
  * Render the current theme url
  * @return string
  */
-function theme_enlightlite_theme_url() {
+function theme_enlightlite_theme_url()
+{
     global $CFG, $PAGE;
-    $themeurl = $CFG->wwwroot.'/theme/'. $PAGE->theme->name;
+    $themeurl = $CFG->wwwroot . '/theme/' . $PAGE->theme->name;
     return $themeurl;
 }
 
@@ -382,7 +397,8 @@ function theme_enlightlite_theme_url() {
  * @param string $menuname Footer block link name.
  * @return string The Footer links are return.
  */
-function theme_enlightlite_generate_links($menuname = '') {
+function theme_enlightlite_generate_links($menuname = '')
+{
     global $CFG, $PAGE;
     $htmlstr = '';
     $menustr = theme_enlightlite_get_setting($menuname);
@@ -407,7 +423,7 @@ function theme_enlightlite_generate_links($menuname = '') {
                 $lurl = new moodle_url($lurl);
             }
         }
-        $htmlstr .= '<li><a href="'.$lurl.'">'.$ltxt.'</a></li>'."\n";
+        $htmlstr .= '<li><a href="' . $lurl . '">' . $ltxt . '</a></li>' . "\n";
     }
     return $htmlstr;
 }
@@ -417,19 +433,20 @@ function theme_enlightlite_generate_links($menuname = '') {
  *
  * @return string The Footer Social Media links are return.
  */
-function theme_enlightlite_social_links() {
+function theme_enlightlite_social_links()
+{
     global $CFG;
     $totalicons = 4;
     $htmlstr = '';
     for ($i = 1; $i <= 4; $i++) {
-        $iconenable = theme_enlightlite_get_setting('siconenable'.$i);
-        $icon = theme_enlightlite_get_setting('socialicon'.$i);
-        $iconcolor = theme_enlightlite_get_setting('siconbgc'.$i);
-        $iconurl = theme_enlightlite_get_setting('siconurl'.$i);
+        $iconenable = theme_enlightlite_get_setting('siconenable' . $i);
+        $icon = theme_enlightlite_get_setting('socialicon' . $i);
+        $iconcolor = theme_enlightlite_get_setting('siconbgc' . $i);
+        $iconurl = theme_enlightlite_get_setting('siconurl' . $i);
         $iconstr = '';
-        $iconsty = (empty($iconcolor)) ? '' : ' style="background: '.$iconcolor.';"';
+        $iconsty = (empty($iconcolor)) ? '' : ' style="background: ' . $iconcolor . ';"';
         if ($iconenable == "1" && !empty($icon)) {
-            $iconstr = '<li class="media0'.$i.'"'.$iconsty.'><a href="'.$iconurl.'"><i class="fa fa-'.$icon.'"></i></a></li>'."\n";
+            $iconstr = '<li class="media0' . $i . '"' . $iconsty . '><a href="' . $iconurl . '"><i class="fa fa-' . $icon . '"></i></a></li>' . "\n";
             $htmlstr .= $iconstr;
         }
     }
@@ -443,7 +460,8 @@ function theme_enlightlite_social_links() {
  * @param string $text
  * @return string
  */
-function theme_enlightlite_strip_html_tags( $text ) {
+function theme_enlightlite_strip_html_tags($text)
+{
     $text = preg_replace(
         array(
             // Remove invisible content.
@@ -466,13 +484,27 @@ function theme_enlightlite_strip_html_tags( $text ) {
             '@</?((frameset)|(frame)|(iframe))@iu',
         ),
         array(
-            ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-            "\n\$0", "\n\$0", "\n\$0", "\n\$0", "\n\$0", "\n\$0",
-            "\n\$0", "\n\$0",
+            ' ',
+            ' ',
+            ' ',
+            ' ',
+            ' ',
+            ' ',
+            ' ',
+            ' ',
+            ' ',
+            "\n\$0",
+            "\n\$0",
+            "\n\$0",
+            "\n\$0",
+            "\n\$0",
+            "\n\$0",
+            "\n\$0",
+            "\n\$0",
         ),
         $text
     );
-    return strip_tags( $text );
+    return strip_tags($text);
 }
 
 /**
@@ -482,7 +514,8 @@ function theme_enlightlite_strip_html_tags( $text ) {
  * @param string $endchar
  * @return string
  */
-function theme_enlightlite_course_trim_char($str, $n = 500, $endchar = '&#8230;') {
+function theme_enlightlite_course_trim_char($str, $n = 500, $endchar = '&#8230;')
+{
     if (strlen($str) < $n) {
         return $str;
     }
@@ -492,7 +525,7 @@ function theme_enlightlite_course_trim_char($str, $n = 500, $endchar = '&#8230;'
     }
     $out = "";
     $small = substr($str, 0, $n);
-    $out = $small.$endchar;
+    $out = $small . $endchar;
     return $out;
 }
 
@@ -501,12 +534,14 @@ function theme_enlightlite_course_trim_char($str, $n = 500, $endchar = '&#8230;'
  * Returns the HTML contents for the marketing spot1 (About us)
  * @return type|string
  */
-function theme_enlightlite_marketingspot1() {
+function theme_enlightlite_marketingspot1()
+{
     global $CFG, $PAGE;
 
     $status = theme_enlightlite_get_setting('marketingSpot1_status');
     $description = theme_enlightlite_get_setting('mspot1desc');
     $title = theme_enlightlite_lang(theme_enlightlite_get_setting('mspot1title'));
+    $title_2 = theme_enlightlite_lang(theme_enlightlite_get_setting('mspot1title2'));
     $media = theme_enlightlite_get_setting('mspot1media', 'format_html');
     if (!empty($media)) {
         $classmedia = 'video-visible';
@@ -522,11 +557,11 @@ function theme_enlightlite_marketingspot1() {
     } else {
         $title1 = $title2 = "";
     }
-    if (isset($status) && $status == 1 ) {
+    if (isset($status) && $status == 1) {
         $description = theme_enlightlite_lang($description);
         if (!empty($description) || !empty($media)) {
 
-            if (!empty($media) && !empty($description) ) {
+            if (!empty($media) && !empty($description)) {
                 $hide = "display:none";
                 $hide2 = "";
             } else if (!empty($media) && empty($description)) {
@@ -536,24 +571,29 @@ function theme_enlightlite_marketingspot1() {
                 $hide = "";
                 $hide2 = "display:none";
             }
-            $content .= html_writer::start_tag('div', array('class' => 'site-info' ));
-            $content .= html_writer::start_tag('div', array('class' => 'container-fluid'));
+            $content .= html_writer::start_tag('div', array('class' => 'site-info'));
+            $content .= html_writer::start_tag('div', array('class' => 'container'));
 
-            $content .= html_writer::start_tag('div', array('class' => 'info-content '. $classmedia ));
-            $content .= html_writer::tag('h2', html_writer::tag('b', $title1) ." ".$title2, array('style' => $hide));
+            $content .= html_writer::start_tag('div', array('class' => 'info-content' . $classmedia));
+            $content .= html_writer::tag('h6',  $title1 . " " . $title2, array('style' => $hide));
             if (!empty($description)) {
-                $content .= html_writer::start_tag('div', array('class' => 'info-video',
-                    'style' => 'max-width:550px;float:left;'));
+                $content .= html_writer::start_tag('div', array(
+                    'class' => 'info-video',
+                    'style' => 'max-width:550px;float:left; margin-right:20px;'
+                ));
                 $content .= $media;
                 $content .= html_writer::end_tag('div');
                 $content .= html_writer::start_tag('div', array('class' => 'info-block'));
-                $content .= html_writer::tag('h2', html_writer::tag('b', $title1) ." ".$title2, array('style' => $hide2) );
+                $content .= html_writer::tag('h6',  $title1 . " " . $title2, array('style' => $hide2));
+                $content .= html_writer::tag('h3', $title_2, ['class' => 'title-2 wow fadeInUp', 'data-wow-delay' => '0.3s']);
                 $content .= html_writer::tag('p', $description);
                 $content .= html_writer::end_tag('div');
             } else {
 
-                $content .= html_writer::start_tag('div', array('class' => 'info-video',
-                    'style' => 'max-width:700px; height: 350px;'));
+                $content .= html_writer::start_tag('div', array(
+                    'class' => 'info-video',
+                    'style' => 'max-width:700px; height: 350px;'
+                ));
                 $content .= $media;
                 $content .= html_writer::end_tag('div');
             }
@@ -561,7 +601,6 @@ function theme_enlightlite_marketingspot1() {
             $content .= html_writer::end_tag('div');
             $content .= html_writer::end_tag('div');
         }
-
     }
     return $content;
 }
@@ -569,7 +608,8 @@ function theme_enlightlite_marketingspot1() {
 /**
  * Return the html contents for the  the marketing spot2 (anytime)
  */
-function theme_enlightlite_marketingspot2() {
+function theme_enlightlite_marketingspot2()
+{
     $content = '';
     $mspot2status = theme_enlightlite_get_setting('marketingSpot2_status');
     $msp2title = theme_enlightlite_get_setting('mspot2title', 'format_html');
@@ -586,8 +626,8 @@ function theme_enlightlite_marketingspot2() {
         $content .= html_writer::start_tag("div", array("class" => "container-fluid"));
         $content .= html_writer::start_tag("div", array("class" => "inner-wrap"));
         $content .= html_writer::start_tag("div", array("class" => "desc-wrap"));
-            $content .= html_writer::tag("h3", $msp2title);
-            $content .= html_writer::tag("p", $msp2desc);
+        $content .= html_writer::tag("h3", $msp2title);
+        $content .= html_writer::tag("p", $msp2desc);
         $content .= html_writer::end_tag("div");
         $content .= html_writer::link($msp2url, $msp2urltxt, array('target' => $target, 'class' => 'btn-jumbo'));
         $content .= html_writer::end_tag("div");
@@ -602,7 +642,8 @@ function theme_enlightlite_marketingspot2() {
  * Function returns the category list random order for header menu.
  * @return type|string
  */
-function theme_enlightlite_category_menu() {
+function theme_enlightlite_category_menu()
+{
     global $CFG, $PAGE;
     $categoryid = optional_param('categoryid', null, PARAM_INT);
     $category = core_course_category::get($categoryid);
@@ -620,7 +661,7 @@ function theme_enlightlite_category_menu() {
     $catatlevel[] = array_shift($selectedparents);
     $catatlevel = array_unique($catatlevel);
 
-    require_once($CFG->libdir. '/coursecatlib.php');
+    require_once($CFG->libdir . '/coursecatlib.php');
     $listing = core_course_category::get(0)->get_children();
     $html .= '<ul class="nav">';
     foreach ($listing as $listitem) {
@@ -629,11 +670,11 @@ function theme_enlightlite_category_menu() {
             $subcategories = $listitem->get_children();
         }
         $html .= theme_enlightlite_category_menu_item(
-        $listitem,
-        $subcategories,
-        $listitem->get_children_count(),
-        $selectedcategory,
-        $selectedparents
+            $listitem,
+            $subcategories,
+            $listitem->get_children_count(),
+            $selectedcategory,
+            $selectedparents
         );
     }
     $html .= '</ul>';
@@ -649,8 +690,13 @@ function theme_enlightlite_category_menu() {
  * @param array $selectedcategories
  * @return string
  */
-function theme_enlightlite_category_menu_item(coursecat $category, array $subcategories, $totalsubcategories,
-$selectedcategory = null, $selectedcategories = array()) {
+function theme_enlightlite_category_menu_item(
+    coursecat $category,
+    array $subcategories,
+    $totalsubcategories,
+    $selectedcategory = null,
+    $selectedcategories = array()
+) {
 
     $viewcaturl = new moodle_url('/course/index.php', array('categoryid' => $category->id));
     $text = $category->get_formatted_name();
@@ -666,8 +712,8 @@ $selectedcategory = null, $selectedcategories = array()) {
         $cls = $activecategory ? 'expanded' : '';
     }
 
-    $html = '<li class="'.$cls.'"'.$dataexpanded.'>';
-    $html .= '<a href="'.$viewcaturl.'">'.$text.'</a>';
+    $html = '<li class="' . $cls . '"' . $dataexpanded . '>';
+    $html .= '<a href="' . $viewcaturl . '">' . $text . '</a>';
 
     if (!empty($subcategories)) {
         $html .= '<ul class="nav childnav">';
@@ -679,11 +725,11 @@ $selectedcategory = null, $selectedcategories = array()) {
         foreach ($subcategories as $listitem) {
             $childcategories = (in_array($listitem->id, $catatlevel)) ? $listitem->get_children() : array();
             $html .= theme_enlightlite_category_menu_item(
-            $listitem,
-            $childcategories,
-            $listitem->get_children_count(),
-            $selectedcategory,
-            $selectedcategories
+                $listitem,
+                $childcategories,
+                $listitem->get_children_count(),
+                $selectedcategory,
+                $selectedcategories
             );
         }
 
@@ -697,30 +743,36 @@ $selectedcategory = null, $selectedcategories = array()) {
 
 /**
  * Returns the language values from the given lang string or key.
- * @param string $key
- * @return string
+ * @param string|null $key The key to check or translate.
+ * @return string The translated string or the original key.
  */
-function theme_enlightlite_lang($key='') {
+function theme_enlightlite_lang($key = '')
+{
+    if (is_null($key) || $key === '') {
+        return $key; // Return early if $key is null or an empty string.
+    }
+
     $pos = strpos($key, 'lang:');
     if ($pos !== false) {
-        list($l, $k) = explode(":", $key);
+        list($l, $k) = explode(":", $key, 2); // Limit the explode to two parts.
         if (get_string_manager()->string_exists($k, 'theme_enlightlite')) {
-            $v = get_string($k, 'theme_enlightlite');
-            return $v;
+            return get_string($k, 'theme_enlightlite');
         } else {
             return $key;
         }
-    } else {
-        return $key;
     }
+
+    return $key;
 }
+
 
 /**
  * Check the memeber status for show the person.
  * @param array $nums
  * @return array
  */
-function theme_enlightlite_check_our_team_status($nums) {
+function theme_enlightlite_check_our_team_status($nums)
+{
     foreach ($nums as $key => $value) {
         $con = theme_enlightlite_get_team_user($value, 'check');
         if ($con == "") {
@@ -736,7 +788,8 @@ function theme_enlightlite_check_our_team_status($nums) {
  * @param integer $length
  * @return string
  */
-function enlightlite_check_length($value, $length) {
+function enlightlite_check_length($value, $length)
+{
 
     if (strlen($value) <= $length) {
         return $value;
@@ -750,7 +803,8 @@ function enlightlite_check_length($value, $length) {
  * Check the admin theme config for combolist type its expandable/collapsable
  * @return bool
  */
-function theme_enlightlite_combolist_type() {
+function theme_enlightlite_combolist_type()
+{
     global $PAGE;
     $type = theme_enlightlite_get_setting('comboListboxType');
     if ($type == 1) {
@@ -765,7 +819,8 @@ function theme_enlightlite_combolist_type() {
  * @param string $check
  * @return string
  */
-function theme_enlightlite_footer_address($check = "") {
+function theme_enlightlite_footer_address($check = "")
+{
     global $PAGE;
     $value = '';
     $address = theme_enlightlite_get_setting('footaddress');
@@ -780,13 +835,13 @@ function theme_enlightlite_footer_address($check = "") {
 
         if (!empty($address)) {
             $value .= html_writer::start_tag('div', array('class' => 'footer-address'));
-            $value .= html_writer::tag('p', "<i class='fa fa-map-marker'></i>".$address);
+            $value .= html_writer::tag('p', "<i class='fa fa-map-marker'></i>" . $address);
             $value .= html_writer::end_tag('div');
         }
         if (!empty($phone)) {
             $value .= html_writer::start_tag('div', array('class' => 'footer-phone'));
             $value .= html_writer::start_tag('p');
-            $value .= "<i class='fa fa-phone-square'></i>".get_string('phone').": ";
+            $value .= "<i class='fa fa-phone-square'></i>" . get_string('phone') . ": ";
             $value .= $phone;
             $value .= html_writer::end_tag('p');
             $value .= html_writer::end_tag('div');
@@ -795,8 +850,8 @@ function theme_enlightlite_footer_address($check = "") {
             $value .= html_writer::start_tag('div', array('class' => 'footer-email'));
             $value .= html_writer::start_tag('p');
 
-            $value .= "<i class='fa fa-envelope'></i>".get_string('emailid', 'theme_enlightlite').": ";
-            $value .= html_writer::link('mailto:'.$email, $email);
+            $value .= "<i class='fa fa-envelope'></i>" . get_string('emailid', 'theme_enlightlite') . ": ";
+            $value .= html_writer::link('mailto:' . $email, $email);
             $value .= html_writer::end_tag('p');
             $value .= html_writer::end_tag('div');
         }
@@ -817,12 +872,13 @@ function theme_enlightlite_footer_address($check = "") {
  * @param string $type
  * @return string
  */
-function theme_enlightlite_get_pattern_color( $css, $type='') {
+function theme_enlightlite_get_pattern_color($css, $type = '')
+{
     global $CFG;
-    $patterncolors = include($CFG->dirroot.'/theme/enlightlite/classes/pattern_colors.php');
+    $patterncolors = include($CFG->dirroot . '/theme/enlightlite/classes/pattern_colors.php');
     $selectedpattern = theme_enlightlite_get_setting('patternselect');
     foreach ($patterncolors[$selectedpattern] as $key => $value) {
-        $tag = '[['.$key.']]';
+        $tag = '[[' . $key . ']]';
         $replacement = $value;
         $css = str_replace($tag, $replacement, $css);
     }
@@ -835,7 +891,8 @@ function theme_enlightlite_get_pattern_color( $css, $type='') {
  * @param int $opacity
  * @return string
  */
-function theme_enlightlite_get_hexa($hexa, $opacity) {
+function theme_enlightlite_get_hexa($hexa, $opacity)
+{
     if (!empty($hexa)) {
         list($r, $g, $b) = sscanf($hexa, "#%02x%02x%02x");
         if ($opacity == '') {

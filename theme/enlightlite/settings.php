@@ -26,8 +26,10 @@ defined('MOODLE_INTERNAL') || die;
 
 if ($ADMIN->fulltree) {
 
-    $settings = new theme_boost_admin_settingspage_tabs('themesettingenlightlite',
-    get_string('enlightlite_settings', 'theme_enlightlite'));
+    $settings = new theme_boost_admin_settingspage_tabs(
+        'themesettingenlightlite',
+        get_string('enlightlite_settings', 'theme_enlightlite')
+    );
 
     /* General Settings */
     $temp = new admin_settingpage('theme_enlightlite_general', get_string('themegeneralsettings', 'theme_enlightlite'));
@@ -125,17 +127,20 @@ if ($ADMIN->fulltree) {
     /* Slideshow Settings Start */
 
     $temp = new admin_settingpage('theme_enlightlite_slideshow', get_string('slideshowheading', 'theme_enlightlite'));
-    $temp->add(new admin_setting_heading('theme_enlightlite_slideshow', get_string('slideshowheadingsub', 'theme_enlightlite'),
-    format_text(get_string('slideshowdesc', 'theme_enlightlite'), FORMAT_MARKDOWN)));
+    $temp->add(new admin_setting_heading(
+        'theme_enlightlite_slideshow',
+        get_string('slideshowheadingsub', 'theme_enlightlite'),
+        format_text(get_string('slideshowdesc', 'theme_enlightlite'), FORMAT_MARKDOWN)
+    ));
 
     // SlideShow Status.
     $name = 'theme_enlightlite/slideshowStatus';
     $title = get_string('slideshowStatus', 'theme_enlightlite');
     $description = get_string('slideshowStatus_desc', 'theme_enlightlite');
     $yes = get_string('yes');
-    $no = get_string('no' );
+    $no = get_string('no');
     $default = 1;
-    $choices = array(1 => $yes , 0 => $no);
+    $choices = array(1 => $yes, 0 => $no);
     $setting = new admin_setting_configselect($name, $title, $description, $default, $choices);
     $temp->add($setting);
 
@@ -146,7 +151,7 @@ if ($ADMIN->fulltree) {
     $yes = get_string('yes');
     $no = get_string('no');
     $default = 1;
-    $choices = array(1 => $yes , 0 => $no);
+    $choices = array(1 => $yes, 0 => $no);
     $setting = new admin_setting_configselect($name, $title, $description, $default, $choices);
     $temp->add($setting);
 
@@ -163,7 +168,7 @@ if ($ADMIN->fulltree) {
     $title = get_string('slideOverlay', 'theme_enlightlite');
     $description = get_string('slideOverlay_desc', 'theme_enlightlite');
     $opacity = array();
-    $opacity = array_combine(range(0, 1, 0.1 ), range(0, 1, 0.1 ));
+    $opacity = array_combine(range(0, 1, 0.1), range(0, 1, 0.1));
     $setting = new admin_setting_configselect($name, $title, $description, '0.4', $opacity);
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
@@ -178,13 +183,13 @@ if ($ADMIN->fulltree) {
         $temp->add($setting);
 
         // SlideShow Status.
-        $name = 'theme_enlightlite/slide'.$i.'status';
+        $name = 'theme_enlightlite/slide' . $i . 'status';
         $title = get_string('slideStatus', 'theme_enlightlite', array('slide' => $i));
         $description = get_string('slideStatus_desc', 'theme_enlightlite', array('slide' => $i));
         $yes = get_string('enable', 'theme_enlightlite');
         $no = get_string('disable', 'theme_enlightlite');
         $default = 1;
-        $choices = array(1 => $yes , 0 => $no);
+        $choices = array(1 => $yes, 0 => $no);
         $setting = new admin_setting_configselect($name, $title, $description, $default, $choices);
         $temp->add($setting);
 
@@ -228,13 +233,13 @@ if ($ADMIN->fulltree) {
         $setting = new admin_setting_configtext($name, $title, $description, $default, PARAM_URL);
         $temp->add($setting);
 
-        $name = 'theme_enlightlite/slide'.$i.'urltarget1';
+        $name = 'theme_enlightlite/slide' . $i . 'urltarget1';
         $title = get_string('urltarget1', 'theme_enlightlite', array('type' => "1"));
         $description = get_string('urltarget_desc', 'theme_enlightlite', array('slide' => $i));
         $same = get_string('sameWindow', 'theme_enlightlite');
         $new = get_string('newWindow', 'theme_enlightlite');
         $default = 1;
-        $choices = array(0 => $same , 1 => $new);
+        $choices = array(0 => $same, 1 => $new);
         $setting = new admin_setting_configselect($name, $title, $description, $default, $choices);
         $temp->add($setting);
 
@@ -247,7 +252,7 @@ if ($ADMIN->fulltree) {
         $temp->add($setting);
 
 
-         // Slider content position.
+        // Slider content position.
         $name = 'theme_enlightlite/slide' . $i . 'contentPosition';
         $title = get_string('slidecontent', 'theme_enlightlite', array('slide' => $i));
         $description = get_string('slidecontentdesc', 'theme_enlightlite');
@@ -273,7 +278,7 @@ if ($ADMIN->fulltree) {
             "bottomLeft" => $bottomleft,
             "bottomCenter" => $bottomcenter,
             "bottomRight" => $bottomright,
-            );
+        );
 
         $setting = new admin_setting_configselect($name, $title, $description, $default, $choices);
         $temp->add($setting);
@@ -285,7 +290,7 @@ if ($ADMIN->fulltree) {
     $temp = new admin_settingpage('theme_enlightlite_marketingspot', get_string('frontpageheading', 'theme_enlightlite'));
     /* Marketing Spot 1*/
     $name = 'theme_enlightlite_mspot1heading';
-    $heading = get_string('marketingspot', 'theme_enlightlite').' 1 ('.get_string('aboutustxt', 'theme_enlightlite').')';
+    $heading = get_string('marketingspot', 'theme_enlightlite') . ' 1 (' . get_string('aboutustxt', 'theme_enlightlite') . ')';
     $information = '';
     $setting = new admin_setting_heading($name, $heading, $information);
     $temp->add($setting);
@@ -306,6 +311,13 @@ if ($ADMIN->fulltree) {
     $description = get_string('mspottitledesc', 'theme_enlightlite', array('msno' => '1'));
     $default = 'lang:aboutus';
     $setting = new admin_setting_configtext($name, $title, $description, $default);
+    $temp->add($setting);
+    // Marketing Spot 1 Title.
+    $name = 'theme_enlightlite/mspot1title2';
+    $title_2 = get_string('title2', 'theme_enlightlite');
+    $description = get_string('mspottitledesc', 'theme_enlightlite', array('msno' => '1'));
+    $default = 'lang:aboutus';
+    $setting = new admin_setting_configtext($name, $title_2, $description, $default);
     $temp->add($setting);
 
     // Marketing Spot 1 Description.
@@ -328,7 +340,7 @@ if ($ADMIN->fulltree) {
 
     /* Marketing Spot 2*/
     $name = 'theme_enlightlite_mspot2heading';
-    $heading = get_string('marketingspot', 'theme_enlightlite').' 2 ( '.get_string('learntitle', 'theme_enlightlite')." )";
+    $heading = get_string('marketingspot', 'theme_enlightlite') . ' 2 ( ' . get_string('learntitle', 'theme_enlightlite') . " )";
     $information = '';
     $setting = new admin_setting_heading($name, $heading, $information);
     $temp->add($setting);
@@ -358,7 +370,7 @@ if ($ADMIN->fulltree) {
 
     // Marketing Spot 2 Link Text.
     $name = 'theme_enlightlite/mspot2urltext';
-    $title = get_string('button', 'theme_enlightlite').' '.get_string('text', 'theme_enlightlite');
+    $title = get_string('button', 'theme_enlightlite') . ' ' . get_string('text', 'theme_enlightlite');
     $description = get_string('mspot2urltxtdesc', 'theme_enlightlite', array('msno' => '2'));
     $default = 'lang:viewallcourses';
     $setting = new admin_setting_configtext($name, $title, $description, $default, PARAM_TEXT);
@@ -366,19 +378,19 @@ if ($ADMIN->fulltree) {
 
     // Marketing Spot 2 Link.
     $name = 'theme_enlightlite/mspot2url';
-    $title = get_string('button', 'theme_enlightlite').' '.get_string('link', 'theme_enlightlite');
+    $title = get_string('button', 'theme_enlightlite') . ' ' . get_string('link', 'theme_enlightlite');
     $description = get_string('mspot2urldesc', 'theme_enlightlite');
     $default = 'http://www.example.com/';
     $setting = new admin_setting_configtext($name, $title, $description, $default, PARAM_URL);
     $temp->add($setting);
 
     $name = 'theme_enlightlite/mspot2urltarget';
-    $title = get_string('button', 'theme_enlightlite').' '.get_string('target', 'theme_enlightlite');
+    $title = get_string('button', 'theme_enlightlite') . ' ' . get_string('target', 'theme_enlightlite');
     $description = get_string('mspot2urltarget_desc', 'theme_enlightlite');
     $same = get_string('sameWindow', 'theme_enlightlite');
     $new = get_string('newWindow', 'theme_enlightlite');
     $default = 1;
-    $choices = array(0 => $same , 1 => $new);
+    $choices = array(0 => $same, 1 => $new);
     $setting = new admin_setting_configselect($name, $title, $description, $default, $choices);
     $temp->add($setting);
     /* Marketing Spot 2*/
@@ -392,12 +404,12 @@ if ($ADMIN->fulltree) {
 
     /* Footer Block1 */
     $name = 'theme_enlightlite_footerblock1heading';
-    $heading = get_string('footerblock', 'theme_enlightlite').' 1 ';
+    $heading = get_string('footerblock', 'theme_enlightlite') . ' 1 ';
     $information = '';
     $setting = new admin_setting_heading($name, $heading, $information);
     $temp->add($setting);
 
-     $name = 'theme_enlightlite/footerb1_status';
+    $name = 'theme_enlightlite/footerb1_status';
     $title = get_string('activateblock', 'theme_enlightlite');
     $description = get_string('footerb1_statusdesc', 'theme_enlightlite');
     $default = 1;
@@ -421,7 +433,7 @@ if ($ADMIN->fulltree) {
 
     /* Footer Block2*/
     $name = 'theme_enlightlite_footerblock2heading';
-    $heading = get_string('footerblock', 'theme_enlightlite').' 2 ';
+    $heading = get_string('footerblock', 'theme_enlightlite') . ' 2 ';
     $information = '';
     $setting = new admin_setting_heading($name, $heading, $information);
     $temp->add($setting);
@@ -451,7 +463,7 @@ if ($ADMIN->fulltree) {
     /* Footer Block3 */
 
     $name = 'theme_enlightlite_footerblock3heading';
-    $heading = get_string('footerblock', 'theme_enlightlite').' 3 ';
+    $heading = get_string('footerblock', 'theme_enlightlite') . ' 3 ';
     $information = '';
     $setting = new admin_setting_heading($name, $heading, $information);
     $temp->add($setting);
@@ -483,7 +495,7 @@ if ($ADMIN->fulltree) {
 
     /* Footer Block4 */
     $name = 'theme_enlightlite_footerblock4heading';
-    $heading = get_string('footerblock', 'theme_enlightlite').' 4 ';
+    $heading = get_string('footerblock', 'theme_enlightlite') . ' 4 ';
     $information = get_string('socialmediadesc', 'theme_enlightlite');
     $setting = new admin_setting_heading($name, $heading, $information);
     $temp->add($setting);
@@ -530,7 +542,7 @@ if ($ADMIN->fulltree) {
 
     // Enable / Disable social media icon 1.
     $name = 'theme_enlightlite/siconenable1';
-    $title = get_string('enable', 'theme_enlightlite').' '.get_string('socialicon', 'theme_enlightlite').' 1 ';
+    $title = get_string('enable', 'theme_enlightlite') . ' ' . get_string('socialicon', 'theme_enlightlite') . ' 1 ';
     $description = '';
     $default = 1;
     $setting = new admin_setting_configcheckbox($name, $title, $description, $default);
@@ -538,7 +550,7 @@ if ($ADMIN->fulltree) {
 
     // Social media icon 1 - name.
     $name = 'theme_enlightlite/socialicon1';
-    $title = get_string('socialicon', 'theme_enlightlite').' 1 ';
+    $title = get_string('socialicon', 'theme_enlightlite') . ' 1 ';
     $description = get_string('socialicondesc', 'theme_enlightlite');
     $default = get_string('socialicon1default', 'theme_enlightlite');
     $setting = new admin_setting_configtext($name, $title, $description, $default);
@@ -546,7 +558,7 @@ if ($ADMIN->fulltree) {
 
     // Social media icon 1 - Background color.
     $name = 'theme_enlightlite/siconbgc1';
-    $title = get_string('socialicon', 'theme_enlightlite').' 1 '.get_string('bgcolor', 'theme_enlightlite');
+    $title = get_string('socialicon', 'theme_enlightlite') . ' 1 ' . get_string('bgcolor', 'theme_enlightlite');
     $description = get_string('siconbgcdesc', 'theme_enlightlite');
     $default = get_string('siconbgc1default', 'theme_enlightlite');
     $previewconfig = null;
@@ -555,7 +567,7 @@ if ($ADMIN->fulltree) {
 
     // Social Media Icon Url 1.
     $name = 'theme_enlightlite/siconurl1';
-    $title = get_string('socialicon', 'theme_enlightlite').' 1 '.get_string('url', 'theme_enlightlite');
+    $title = get_string('socialicon', 'theme_enlightlite') . ' 1 ' . get_string('url', 'theme_enlightlite');
     $description = get_string('siconurldesc', 'theme_enlightlite');
     $default = get_string('siconurl1default', 'theme_enlightlite');
     $setting = new admin_setting_configtext($name, $title, $description, $default);
@@ -563,7 +575,7 @@ if ($ADMIN->fulltree) {
 
     // Enable / Disable social media icon 2.
     $name = 'theme_enlightlite/siconenable2';
-    $title = get_string('enable', 'theme_enlightlite').' '.get_string('socialicon', 'theme_enlightlite').' 2 ';
+    $title = get_string('enable', 'theme_enlightlite') . ' ' . get_string('socialicon', 'theme_enlightlite') . ' 2 ';
     $description = '';
     $default = 1;
     $setting = new admin_setting_configcheckbox($name, $title, $description, $default);
@@ -571,7 +583,7 @@ if ($ADMIN->fulltree) {
 
     // Social media icon 2 - name.
     $name = 'theme_enlightlite/socialicon2';
-    $title = get_string('socialicon', 'theme_enlightlite').' 2 ';
+    $title = get_string('socialicon', 'theme_enlightlite') . ' 2 ';
     $description = get_string('socialicondesc', 'theme_enlightlite');
     $default = get_string('socialicon2default', 'theme_enlightlite');
     $setting = new admin_setting_configtext($name, $title, $description, $default);
@@ -579,7 +591,7 @@ if ($ADMIN->fulltree) {
 
     // Social media icon 2 - Background color.
     $name = 'theme_enlightlite/siconbgc2';
-    $title = get_string('socialicon', 'theme_enlightlite').' 2 '.get_string('bgcolor', 'theme_enlightlite');
+    $title = get_string('socialicon', 'theme_enlightlite') . ' 2 ' . get_string('bgcolor', 'theme_enlightlite');
     $description = get_string('siconbgcdesc', 'theme_enlightlite');
     $default = get_string('siconbgc2default', 'theme_enlightlite');
     $previewconfig = null;
@@ -588,7 +600,7 @@ if ($ADMIN->fulltree) {
 
     // Social Media Icon Url 2.
     $name = 'theme_enlightlite/siconurl2';
-    $title = get_string('socialicon', 'theme_enlightlite').' 2 '.get_string('url', 'theme_enlightlite');
+    $title = get_string('socialicon', 'theme_enlightlite') . ' 2 ' . get_string('url', 'theme_enlightlite');
     $description = get_string('siconurldesc', 'theme_enlightlite');
     $default = get_string('siconurl2default', 'theme_enlightlite');
     $setting = new admin_setting_configtext($name, $title, $description, $default);
@@ -596,7 +608,7 @@ if ($ADMIN->fulltree) {
 
     // Enable / Disable social media icon 3.
     $name = 'theme_enlightlite/siconenable3';
-    $title = get_string('enable', 'theme_enlightlite').' '.get_string('socialicon', 'theme_enlightlite').' 3 ';
+    $title = get_string('enable', 'theme_enlightlite') . ' ' . get_string('socialicon', 'theme_enlightlite') . ' 3 ';
     $description = '';
     $default = 1;
     $setting = new admin_setting_configcheckbox($name, $title, $description, $default);
@@ -604,7 +616,7 @@ if ($ADMIN->fulltree) {
 
     // Social media icon 3 - name.
     $name = 'theme_enlightlite/socialicon3';
-    $title = get_string('socialicon', 'theme_enlightlite').' 3 ';
+    $title = get_string('socialicon', 'theme_enlightlite') . ' 3 ';
     $description = get_string('socialicondesc', 'theme_enlightlite');
     $default = get_string('socialicon3default', 'theme_enlightlite');
     $setting = new admin_setting_configtext($name, $title, $description, $default);
@@ -612,7 +624,7 @@ if ($ADMIN->fulltree) {
 
     // Social media icon 3 - Background color.
     $name = 'theme_enlightlite/siconbgc3';
-    $title = get_string('socialicon', 'theme_enlightlite').' 3 '.get_string('bgcolor', 'theme_enlightlite');
+    $title = get_string('socialicon', 'theme_enlightlite') . ' 3 ' . get_string('bgcolor', 'theme_enlightlite');
     $description = get_string('siconbgcdesc', 'theme_enlightlite');
     $default = get_string('siconbgc3default', 'theme_enlightlite');
     $previewconfig = null;
@@ -621,7 +633,7 @@ if ($ADMIN->fulltree) {
 
     // Social Media Icon Url 3.
     $name = 'theme_enlightlite/siconurl3';
-    $title = get_string('socialicon', 'theme_enlightlite').' 3 '.get_string('url', 'theme_enlightlite');
+    $title = get_string('socialicon', 'theme_enlightlite') . ' 3 ' . get_string('url', 'theme_enlightlite');
     $description = get_string('siconurldesc', 'theme_enlightlite');
     $default = get_string('siconurl3default', 'theme_enlightlite');
     $setting = new admin_setting_configtext($name, $title, $description, $default);
@@ -629,7 +641,7 @@ if ($ADMIN->fulltree) {
 
     // Enable / Disable social media icon 4.
     $name = 'theme_enlightlite/siconenable4';
-    $title = get_string('enable', 'theme_enlightlite').' '.get_string('socialicon', 'theme_enlightlite').' 4 ';
+    $title = get_string('enable', 'theme_enlightlite') . ' ' . get_string('socialicon', 'theme_enlightlite') . ' 4 ';
     $description = '';
     $default = 1;
     $setting = new admin_setting_configcheckbox($name, $title, $description, $default);
@@ -637,7 +649,7 @@ if ($ADMIN->fulltree) {
 
     // Social media icon 4 - name.
     $name = 'theme_enlightlite/socialicon4';
-    $title = get_string('socialicon', 'theme_enlightlite').' 4 ';
+    $title = get_string('socialicon', 'theme_enlightlite') . ' 4 ';
     $description = get_string('socialicondesc', 'theme_enlightlite');
     $default = get_string('socialicon4default', 'theme_enlightlite');
     $setting = new admin_setting_configtext($name, $title, $description, $default);
@@ -645,7 +657,7 @@ if ($ADMIN->fulltree) {
 
     // Social media icon 4 - Background color.
     $name = 'theme_enlightlite/siconbgc4';
-    $title = get_string('socialicon', 'theme_enlightlite').' 4 '.get_string('bgcolor', 'theme_enlightlite');
+    $title = get_string('socialicon', 'theme_enlightlite') . ' 4 ' . get_string('bgcolor', 'theme_enlightlite');
     $description = get_string('siconbgcdesc', 'theme_enlightlite');
     $default = get_string('siconbgc4default', 'theme_enlightlite');
     $previewconfig = null;
@@ -654,7 +666,7 @@ if ($ADMIN->fulltree) {
 
     // Social Media Icon Url 4.
     $name = 'theme_enlightlite/siconurl4';
-    $title = get_string('socialicon', 'theme_enlightlite').' 4 '.get_string('url', 'theme_enlightlite');
+    $title = get_string('socialicon', 'theme_enlightlite') . ' 4 ' . get_string('url', 'theme_enlightlite');
     $description = get_string('siconurldesc', 'theme_enlightlite');
     $default = get_string('siconurl4default', 'theme_enlightlite');
     $setting = new admin_setting_configtext($name, $title, $description, $default);
@@ -678,5 +690,4 @@ if ($ADMIN->fulltree) {
 
     $settings->add($temp);
     /* Footer Settings end */
-
 }

@@ -29,14 +29,16 @@
 /**
  * Defines the structure step to restore one mod_newexternship activity.
  */
-class restore_newexternship_activity_structure_step extends restore_activity_structure_step {
+class restore_newexternship_activity_structure_step extends restore_activity_structure_step
+{
 
     /**
      * Defines the structure to be restored.
      *
      * @return restore_path_element[].
      */
-    protected function define_structure() {
+    protected function define_structure()
+    {
 
         $paths = array();
         $userinfo = $this->get_setting_value('userinfo');
@@ -58,7 +60,8 @@ class restore_newexternship_activity_structure_step extends restore_activity_str
      *
      * @param array $data Parsed element data.
      */
-    protected function process_newexternship($data) {
+    protected function process_newexternship($data)
+    {
         global $DB;
 
         $data = (object)$data;
@@ -77,7 +80,8 @@ class restore_newexternship_activity_structure_step extends restore_activity_str
      *
      * @param array $data Parsed element data.
      */
-    protected function process_newexternship_data($data) {
+    protected function process_newexternship_data($data)
+    {
         global $DB;
 
         $data = (object)$data;
@@ -99,13 +103,15 @@ class restore_newexternship_activity_structure_step extends restore_activity_str
         $data->cmid = $cmid;
         // Insert the newexternship_data record.
         $newitemid = $DB->insert_record('newexternship_data', $data);
+        $this->set_mapping('newexternship_data', $oldid, $newitemid, true);
 
         // No need to save this mapping as far as nothing depend on it.
     }
-/**
+    /**
      * Helper function to get the module ID of the 'externship' activity.
      */
-    protected function get_moduleid() {
+    protected function get_moduleid()
+    {
         global $DB;
         static $moduleid = null;
 
@@ -119,10 +125,10 @@ class restore_newexternship_activity_structure_step extends restore_activity_str
     /**
      * Defines post-execution actions.
      */
-    protected function after_execute() {
+    protected function after_execute()
+    {
         // Add newexternship related files, no need to match by itemname (just internally handled context).
         $this->add_related_files('mod_newexternship', 'intro', null);
-        $this->add_related_files('mod_newexternship', 'file', null);
+        $this->add_related_files('mod_newexternship', 'file', 'newexternship_data');
     }
 }
-

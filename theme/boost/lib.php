@@ -30,7 +30,8 @@ defined('MOODLE_INTERNAL') || die();
  * @param string $tree The CSS tree.
  * @param theme_config $theme The theme config object.
  */
-function theme_boost_css_tree_post_processor($tree, $theme) {
+function theme_boost_css_tree_post_processor($tree, $theme)
+{
     error_log('theme_boost_css_tree_post_processor() is deprecated. Required' .
         'prefixes for Bootstrap are now in theme/boost/scss/moodle/prefixes.scss');
     $prefixer = new theme_boost\autoprefixer($tree);
@@ -43,7 +44,8 @@ function theme_boost_css_tree_post_processor($tree, $theme) {
  * @param theme_config $theme The theme config object.
  * @return string
  */
-function theme_boost_get_extra_scss($theme) {
+function theme_boost_get_extra_scss($theme)
+{
     $content = '';
     $imageurl = $theme->setting_file_url('backgroundimage', 'backgroundimage');
 
@@ -79,7 +81,8 @@ function theme_boost_get_extra_scss($theme) {
  * @param array $options
  * @return bool
  */
-function theme_boost_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
+function theme_boost_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array())
+{
     if ($context->contextlevel == CONTEXT_SYSTEM && ($filearea === 'logo' || $filearea === 'backgroundimage' ||
         $filearea === 'loginbackgroundimage')) {
         $theme = theme_config::load('boost');
@@ -98,7 +101,8 @@ function theme_boost_pluginfile($course, $cm, $context, $filearea, $args, $force
  *
  * @return array[]
  */
-function theme_boost_user_preferences(): array {
+function theme_boost_user_preferences(): array
+{
     return [
         'drawer-open-block' => [
             'type' => PARAM_BOOL,
@@ -121,7 +125,8 @@ function theme_boost_user_preferences(): array {
  * @param theme_config $theme The theme config object.
  * @return string
  */
-function theme_boost_get_main_scss_content($theme) {
+function theme_boost_get_main_scss_content($theme)
+{
     global $CFG;
 
     $scss = '';
@@ -148,7 +153,8 @@ function theme_boost_get_main_scss_content($theme) {
  *
  * @return string compiled css
  */
-function theme_boost_get_precompiled_css() {
+function theme_boost_get_precompiled_css()
+{
     global $CFG;
     return file_get_contents($CFG->dirroot . '/theme/boost/style/moodle.css');
 }
@@ -159,7 +165,8 @@ function theme_boost_get_precompiled_css() {
  * @param theme_config $theme The theme config object.
  * @return string
  */
-function theme_boost_get_pre_scss($theme) {
+function theme_boost_get_pre_scss($theme)
+{
     global $CFG;
 
     $scss = '';
@@ -174,7 +181,7 @@ function theme_boost_get_pre_scss($theme) {
         if (empty($value)) {
             continue;
         }
-        array_map(function($target) use (&$scss, $value) {
+        array_map(function ($target) use (&$scss, $value) {
             $scss .= '$' . $target . ': ' . $value . ";\n";
         }, (array) $targets);
     }

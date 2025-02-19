@@ -1,0 +1,64 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template theme_academi/courses
+
+    TODO describe template courses
+
+    Example context (json):
+    {
+    }
+}}
+<!-- Courses Start -->
+  
+<div class="container-fliud mx-4 py-5">
+    <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+        <h6 class="section-title bg-white text-center text-primary py-3 animated slideInDown">Courses</h6>
+        <h1 class="mb-5 animated slideInDown">Popular Courses</h1>
+    </div>
+    <div class="row g-3 justify-content-center ">
+    {{#courses}}
+        <div class="col-lg-3 col-md-6 wow fadeInUp mb-3 " data-wow-delay="0.1s">
+            <div class="course-item bg-light">
+                <div class="position-relative overflow-hidden animated slideInDown">
+                <a href="{{link}}" ><img class="img-fluid" src="{{image}}" alt=""></a>
+                   
+                </div>
+                <div class="text-center p-4 pb-0">
+                    <h3 class="mb-0 animated slideInDown">{{cost}} {{currency}}</h3>
+                    <div class="mb-3">
+                        <small class="fa fa-star text-primary animated slideInDown"></small>
+                        <small class="fa fa-star text-primary animated slideInDown"></small>
+                        <small class="fa fa-star text-primary animated slideInDown"></small>
+                        <small class="fa fa-star text-primary animated slideInDown"></small>
+                        <small class="fa fa-star text-primary animated slideInDown"></small>
+                        <small>(123)</small>
+                    </div>
+                <a href="{{link}}" ><h5 class="mb-4 animated slideInDown">{{fullname}}</h5></a>
+                </div>
+                <div class="d-flex border-top">
+                    <small class="flex-fill text-center border-end py-2"><i class="fa fa-user-tie text-primary me-2"></i> {{teacher}}</small>
+                    <small class="flex-fill text-center border-end py-2"><i class="fa fa-clock text-primary me-2"></i> Stard Date: {{startdate}}</small>
+                    <small class="flex-fill text-center py-2"><i class="fa fa-user text-primary me-2"></i> {{noofstudent}} Students</small>
+                </div>
+            </div>
+        </div>
+        {{/courses}}
+    </div>
+</div>
+ 
+    <!-- Courses End -->

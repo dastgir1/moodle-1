@@ -1,0 +1,51 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_coupon/cleanupconfirm
+
+    Cleanup confirmation details.
+
+    Example context (json):
+    {
+        "hasstartdate": true,
+        "startdate": "2023-01-01",
+        "hasenddate": true,
+        "enddate": "2024-01-01",
+        "usedtypestr": "String indicating cleanup of used coupon(s)",
+        "typestr": "Coupon type to cleanup",
+        "hasdeletestrings": true,
+        "deletestrings": [
+            "Deletion information 1",
+            "Deletion information 2"
+        ],
+        "deletecount": 2
+    }
+}}
+<div class="d-flex flex-column">
+    {{#hasstartdate}}<div>{{#str}}timebefore, block_coupon{{/str}}: {{startdate}}</div>{{/hasstartdate}}
+    {{#hasenddate}}<div>{{#str}}timeafter, block_coupon{{/str}}: {{enddate}}</div>{{/hasenddate}}
+    <div>{{#str}}coupon:used, block_coupon{{/str}}: {{usedtypestr}}</div>
+    <div>{{#str}}coupon:type, block_coupon{{/str}}: {{typestr}}</div>
+    {{#hasdeletestrings}}
+    <div>{{#str}}with-names, block_coupon{{/str}}:
+        <ul>
+        {{#deletestrings}}<li>{{{.}}}</li>{{/deletestrings}}
+        </ul>
+    </div>
+    {{/hasdeletestrings}}
+    <div>{{#str}}remove-count, block_coupon, {{deletecount}}{{/str}}</div>
+</div>

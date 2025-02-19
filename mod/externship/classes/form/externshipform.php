@@ -24,21 +24,23 @@ namespace mod_externship\form;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 // require_once("$CFG->libdir/formslib.php");
-class externshipform extends \moodleform{
-    public function definition(){
+class externshipform extends \moodleform
+{
+    public function definition()
+    {
         $mform = $this->_form;
-        global $CFG,$DB,$externship_data,$externshipid;
+        global $CFG, $DB, $externship_data, $externshipid;
         // Header
         $mform->addElement('header', 'externshipform', get_string('externshipform', 'externship'));
 
         $dataid = $this->_customdata['dataid'];
         $externshipid = $this->_customdata['externshipid'];
-      
+
         $mform->addElement('hidden', 'dataid', $dataid);
         $mform->setType('dataid', PARAM_INT);
         $mform->addElement('hidden', 'externshipid', $externshipid);
         $mform->setType('externshipid', PARAM_INT);
-      
+
 
         $now = getdate();
         $curryear = (int) $now['year'];
@@ -46,10 +48,10 @@ class externshipform extends \moodleform{
         for ($i = 1; $i <= 12; $months["$i"] = $i++);
         for ($i = $curryear - 5; $i <= $curryear + 5; $years["$i"] = $i++);
         for ($i = 0; $i <= 23; $hours["$i"] = $i++);
-        for ($i = 0; $i < 60; $i+= 5) $minutes["$i"] = sprintf("%02d", $i);
+        for ($i = 0; $i < 60; $i += 5) $minutes["$i"] = sprintf("%02d", $i);
 
         if ($dataid) {
-            
+
             $starttime_obj = getdate($externship_data->starttime);
             $endtime_obj = getdate($externship_data->endtime);
 
@@ -60,12 +62,12 @@ class externshipform extends \moodleform{
             $default_startminute      = $starttime_obj['minutes'];
             $default_endhour        = $endtime_obj['hours'];
             $default_endminute      = $endtime_obj['minutes'];
-           
+
             // $default_durationhour     = intval(intval($externship_data->duration) / 3600);
             // $default_durationminute   = intval((intval($externship_data->duration) - $default_durationhour * 3600) /60);
             $default_description      = $externship_data->description;
             if ($externship_data->cmid) $default_cmid = $externship_data->cmid;
-                else $default_cmid = '0';
+            else $default_cmid = '0';
         } else {
             $default_day   =  $now['mday'];
             $default_month =  $now['mon'];
@@ -79,51 +81,51 @@ class externshipform extends \moodleform{
             $default_description    = '';
             $default_cmid = '0';
         }
-        $mform->addElement('text', 'clinicname', get_string('clinicname','externship'),['placeholder' => get_string('enterclinicname', 'externship')]);
-       
+        $mform->addElement('text', 'clinicname', get_string('clinicname', 'externship'), ['placeholder' => get_string('enterclinicname', 'externship')]);
+
         $mform->setType('clinicname', PARAM_TEXT);
 
-        $mform->addElement('text', 'preceptorname', get_string('preceptorname','externship'),['placeholder' => get_string('enterpreceptorname', 'externship')]);
+        $mform->addElement('text', 'preceptorname', get_string('preceptorname', 'externship'), ['placeholder' => get_string('enterpreceptorname', 'externship')]);
         $mform->setType('preceptorname', PARAM_TEXT);
 
-        $stimearray=array();
-        $stimearray[]=& $mform->createElement('select', 'day', '', $days);
+        $stimearray = array();
+        $stimearray[] = &$mform->createElement('select', 'day', '', $days);
         $mform->setDefault('day', $default_day);
         $mform->setType('day', PARAM_INT);
-        $stimearray[]=& $mform->createElement('select', 'month', '', $months);
+        $stimearray[] = &$mform->createElement('select', 'month', '', $months);
         $mform->setType('month', PARAM_INT);
         $mform->setDefault('month', $default_month);
-        $stimearray[]=& $mform->createElement('select', 'year', '', $years);
+        $stimearray[] = &$mform->createElement('select', 'year', '', $years);
         $mform->setType('year', PARAM_INT);
         $mform->setDefault('year', $default_year);
-        $mform->addGroup( $stimearray,'timearr',get_string('date', 'externship') ,' ',false);
+        $mform->addGroup($stimearray, 'timearr', get_string('date', 'externship'), ' ', false);
 
-        $stimearray=array();
-        $stimearray[]=& $mform->createElement('select', 'starthour', '', $hours);
+        $stimearray = array();
+        $stimearray[] = &$mform->createElement('select', 'starthour', '', $hours);
         $mform->setDefault('starthour', $default_starthour);
         $mform->setType('starthour', PARAM_INT);
-        $stimearray[]=& $mform->createElement('select', 'startminute', '', $minutes);
+        $stimearray[] = &$mform->createElement('select', 'startminute', '', $minutes);
         $mform->setDefault('startminute', $default_startminute);
         $mform->setType('startminute', PARAM_INT);
-        $mform->addGroup( $stimearray,'timearr',get_string('starttime', 'externship') ,' ',false);
+        $mform->addGroup($stimearray, 'timearr', get_string('starttime', 'externship'), ' ', false);
 
-        $stimearray=array();
-        $stimearray[]=& $mform->createElement('select', 'endhour', '', $hours);
+        $stimearray = array();
+        $stimearray[] = &$mform->createElement('select', 'endhour', '', $hours);
         $mform->setDefault('endhour', $default_endhour);
         $mform->setType('endhour', PARAM_INT);
-        $stimearray[]=& $mform->createElement('select', 'endminute', '', $minutes);
+        $stimearray[] = &$mform->createElement('select', 'endminute', '', $minutes);
         $mform->setDefault('endminute', $default_endminute);
         $mform->setType('endminute', PARAM_INT);
-        $mform->addGroup( $stimearray,'timearr',get_string('endtime', 'externship') ,' ',false);
+        $mform->addGroup($stimearray, 'timearr', get_string('endtime', 'externship'), ' ', false);
 
-        $html = '<p id="custom-div-id"></p>';
+        $html = '<p id="custom-div-id" class="text-danger"></p>';
         $mform->addElement('html', $html);
 
-        $mform->addElement('text', 'duration', get_string('duration','externship'),['placeholder' => get_string('enterduration', 'externship')]);
-        $mform->setType('duration', PARAM_TEXT); 
-        
-    
-        $mform->addElement('textarea', 'description', get_string('description', 'externship'),['placeholder' => get_string('enterdescription', 'externship')]);
+        $mform->addElement('text', 'duration', get_string('duration', 'externship'), ['placeholder' => get_string('enterduration', 'externship')]);
+        $mform->setType('duration', PARAM_TEXT);
+
+
+        $mform->addElement('textarea', 'description', get_string('description', 'externship'), ['placeholder' => get_string('enterdescription', 'externship')]);
         $mform->setType('description', PARAM_RAW);
         $mform->setDefault('description', $default_description);
         // $maxbytes = get_max_upload_sizes();
@@ -138,7 +140,7 @@ class externshipform extends \moodleform{
                 'maxbytes' => 1048576,
                 'areamaxbytes' => 1048576,
                 'maxfiles' => 1,
-                'accepted_types' => ['.doc','.docx','.pdf','.jpg','.png'],
+                'accepted_types' => ['.doc', '.docx', '.pdf', '.jpg', '.png'],
                 // 'return_types' => FILE_INTERNAL | FILE_EXTERNAL,
             ]
         );
@@ -148,12 +150,12 @@ class externshipform extends \moodleform{
     }
 
     // Custom validation should be added here.
-    function validation($data, $files) {
+    function validation($data, $files)
+    {
         $errors = parent::validation($data, $files);
         // if (!is_numeric($data['id'])) {
         //     $errors['id'] = get_string('err_numeric', 'offlinesession');
         // }
         return $errors;
     }
-    
 }

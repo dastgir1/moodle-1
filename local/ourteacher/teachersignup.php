@@ -22,17 +22,17 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require('../../config.php');
-require_once($CFG->libdir.'/formslib.php');
-require_once($CFG->libdir.'/adminlib.php');
-require_once($CFG->dirroot.'/mod/page/locallib.php');
-require_once($CFG->dirroot.'/local/ourteacher/lib.php');
-require_once($CFG->dirroot.'/local/ourteacher/classes/teachersignup.php');
-require_once($CFG->dirroot.'/course/lib.php');
-require_once($CFG->dirroot.'/enrol/manual/locallib.php');
-require_once($CFG->dirroot.'/user/lib.php');
-require_once($CFG->libdir.'/filelib.php');
-require_once($CFG->dirroot.'/user/profile/lib.php');
-require_once($CFG->dirroot.'/user/editlib.php');
+require_once($CFG->libdir . '/formslib.php');
+require_once($CFG->libdir . '/adminlib.php');
+require_once($CFG->dirroot . '/mod/page/locallib.php');
+require_once($CFG->dirroot . '/local/ourteacher/lib.php');
+require_once($CFG->dirroot . '/local/ourteacher/classes/teachersignup.php');
+require_once($CFG->dirroot . '/course/lib.php');
+require_once($CFG->dirroot . '/enrol/manual/locallib.php');
+require_once($CFG->dirroot . '/user/lib.php');
+require_once($CFG->libdir . '/filelib.php');
+require_once($CFG->dirroot . '/user/profile/lib.php');
+require_once($CFG->dirroot . '/user/editlib.php');
 
 $path = optional_param('path', '', PARAM_PATH); // $nameofarray = optional_param_array('nameofarray', null, PARAM_INT);
 $pageparams = array();
@@ -58,7 +58,7 @@ $PAGE->set_heading($header);
 $mform = new local_ourteacher\teachersignup();
 
 if ($mform->is_cancelled()) {
-    redirect(new moodle_url('/teachersignup.php'));
+    redirect(new moodle_url('/local/ourteacher/ourteacher.php'));
 } else if ($mform->is_submitted()) {
     if ($data = $mform->get_data()) {
 
@@ -67,21 +67,21 @@ if ($mform->is_cancelled()) {
         $user->email = $data->email;
         $user->firstname = $data->firstname;
         $user->lastname = $data->lastname;
-		$user->description = $data->qualification;		
+        $user->description = $data->qualification;
         $user->username =  $user->email;
         $password = random_string(8);
-        $user->password=hash_internal_user_password($password);       
+        $user->password = hash_internal_user_password($password);
         $table = "user";
-        $conditions = ["email"=>$user->email];
+        $conditions = ["email" => $user->email];
         $result = $DB->get_record(
             $table,
             $conditions,
             $fields = '*',
             $strictness = IGNORE_MISSING
         );
-        if (!empty($result)){
-            redirect($CFG->wwwroot. "/login/index.php");
-        }else{
+        if (!empty($result)) {
+            redirect($CFG->wwwroot . "/login/index.php");
+        } else {
 
             $user->auth       = 'manual';
             $user->confirmed  = 1;
@@ -91,20 +91,30 @@ if ($mform->is_cancelled()) {
             $user->country    = 'ES'; //Or another country
             $user->lang       = 'en'; //Or another country
             $user->timecreated = time();
-            $user->maildisplay = 0;                  
+            $user->maildisplay = 0;
+            $user->mailformat = 1;
             // [START] Code added by S.Zonair.
             $userid = user_create_user($user);
-            if($userid){
-                $subject = 'login detail';
-                $username = $user->username;      
-                $message = 'please login with your detail and change your password.';
-                $to =core_user::get_user($userid);
-                $from = 'testing@paktaleem.net';
-                $body = "From:  $from \n username: $username \n password:  $password \n Message: $message";
-                if(email_to_user ($to,$from,$subject,$body)){
-                    echo "email send to you with login detail";
-                }else{
-                    echo "some thing went wrong email not send ";
+            if ($userid) {
+                $toUser = \core_user::get_user($userid);
+                $fromUser = \core_user::get_support_user();
+                $site = get_site();
+                $subject = "Welcome to {$site->fullname}";
+                $messagehtml = "Dear {$user->firstname},<br><br>";
+                $messagehtml .= "Welcome to {$site->fullname}! We are excited to have you with us. Your username is <strong>{$user->username}</strong>. Click <a href='{$CFG->wwwroot}'>here</a> to login.<br><br>";
+                $messagehtml .= "Best regards,<br>";
+                $messagehtml .= "{$site->fullname} team";
+
+                $messagetext = html_to_text($messagehtml);
+
+                // $mailSent = email_to_user($user, $supportuser, $subject, $messagetext, $messagehtml);
+                $mailSent = email_to_user($toUser, $fromUser, $subject, $messagetext, $messagehtml, '', '', false);
+
+                // Check if the email was sent successfully
+                if ($mailSent) {
+                    echo 'Email sent successfully.';
+                } else {
+                    echo 'Failed to send email.';
                 }
             }
 
@@ -117,28 +127,28 @@ if ($mform->is_cancelled()) {
                 'maxfiles'       => 1,
                 'accepted_types' => 'optimised_image'
             ];
-            
+
             $draftitemid = file_get_submitted_draft_itemid('userpic');
-        
+
             file_prepare_draft_area($draftitemid, $usercontext->id, 'user', 'newicon', 0, $filemanageroptions);
 
             $user->picture = $data->userpic;
             $user->id =  $userid;
 
-            if(core_user::update_picture($user, $filemanageroptions)){
+            if (core_user::update_picture($user, $filemanageroptions)) {
                 echo "user picture update successfuly.";
-            }else{
+            } else {
                 echo "user picture not update.";
             }
-        
+
             // [END] Code added by S.Zonair.         
         }
         //  Get teacher data and signup in as ateacher
         $record = new stdClass();
 
         $record->userid =  $userid;
-		$record->qualification = $data->qualification;
-		$record->userpic = $data->userpic;
+        $record->qualification = $data->qualification;
+        $record->userpic = $data->userpic;
         file_save_draft_area_files(
             $data->userpic,
             $context->id,
@@ -146,19 +156,18 @@ if ($mform->is_cancelled()) {
             'userpic',
             $data->userpic
         );
-       $teacherrecord = $DB->insert_record('teachers', $record);
-       if($teacherrecord){
-         echo " Teacher record Added successfully";
-       }else{
-        echo "Oops! teacher record not add";
-       }
-       
-	}
+        $teacherrecord = $DB->insert_record('teachers', $record);
+        if ($teacherrecord) {
+            echo " Teacher record Added successfully";
+        } else {
+            echo "Oops! teacher record not add";
+        }
+    }
 
-    
+
     // Define the course data
     $course = new stdClass();
-    $course->fullname = $user->firstname." ".$user->lastname;
+    $course->fullname = $user->firstname . " " . $user->lastname;
     $course->shortname = $user->firstname;
     $course->category = 1; // Replace with the desired category ID
     $course->summary = $user->description;
@@ -167,46 +176,47 @@ if ($mform->is_cancelled()) {
     // Create the course
     $courseid = create_course($course);
     $context = context_course::instance($course->id);
-    $filearea = 'overviewfiles';    
+    $filearea = 'overviewfiles';
     $draftitemid = file_get_submitted_draft_itemid('userpic');
-    $fileinfo = array('contextid' => $context->id, 'component' => 'course', 'filearea' => $filearea,'itemid' => $draftitemid, );
+    $fileinfo = array('contextid' => $context->id, 'component' => 'course', 'filearea' => $filearea, 'itemid' => $draftitemid,);
     // Save the uploaded file
     file_save_draft_area_files($fileinfo, $context->id, 'course', $filearea, 0, ['subdirs' => false]);
-    file_prepare_draft_area($draftitemid,$context->id,'course','overviewfiles', 0,['subdirs' => 0,'maxbytes' => $CFG->maxbytes, 'maxfiles' => 1,]);
+    file_prepare_draft_area($draftitemid, $context->id, 'course', 'overviewfiles', 0, ['subdirs' => 0, 'maxbytes' => $CFG->maxbytes, 'maxfiles' => 1,]);
     $fs = get_file_storage();
     $files = $fs->get_area_files($context->id, 'course', 'overviewfiles', 0);
-    $file=end($files);
+    $file = end($files);
     if (isset($file)) {
-        $course->image =$data->picture;
+        $course->image = $data->userpic;
         update_course($course);
     } else {
         // File upload failed
         // Handle the error
-    }    
-        // Display success or error message
+    }
+    // Display success or error message
     if ($courseid) {
-        
+
         echo "Course created successfully with ID: $course->id";
-        
     } else {
         echo "Failed to create course.";
     }
 
     $roleid = 3; // Replace with the desired role ID
-    if (!is_enrolled(context_course::instance($course->id),$user->id, '', true)) {
+    if (!is_enrolled(context_course::instance($course->id), $user->id, '', true)) {
         // Enroll the user manually
         $enrol = enrol_get_plugin('manual');
         $instances = enrol_get_instances($course->id, true);
         foreach ($instances as $instance) {
             if ($instance->enrol == 'manual') {
                 $enrolmanual = new enrol_manual_plugin();
-                $enrolmanual->enrol_user($instance, $user->id,$roleid);
+                $enrolmanual->enrol_user($instance, $user->id, $roleid);
                 break; // Assuming there is only one manual enrollment instance
             }
         }
         // Optionally, you can notify the user or perform additional actions upon successful enrollment
-        notice("User enrolled successfully in the course", 
-        new moodle_url('/course/view.php', array('id' => $course->id))) ;
+        notice(
+            "User enrolled successfully in the course",
+            new moodle_url('/course/view.php', array('id' => $course->id))
+        );
     } else {
         // The user is already enrolled in the course
         echo "User is already enrolled in the course.";

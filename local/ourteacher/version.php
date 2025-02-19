@@ -25,7 +25,7 @@
 
 
 $plugin->component = 'local_ourteacher';
-$plugin->version = 2020040819;
+$plugin->version = 2025021300;
 $plugin->requires = 2014051200;
 $plugin->release = '0.1';
 $plugin->maturity = MATURITY_STABLE;

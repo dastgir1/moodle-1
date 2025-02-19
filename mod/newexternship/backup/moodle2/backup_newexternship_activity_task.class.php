@@ -28,24 +28,27 @@ defined('MOODLE_INTERNAL') || die();
 // More information about the backup process: {@link https://docs.moodle.org/dev/Backup_API}.
 // More information about the restore process: {@link https://docs.moodle.org/dev/Restore_API}.
 
-require_once($CFG->dirroot.'//mod/newexternship/backup/moodle2/backup_newexternship_stepslib.php');
+require_once($CFG->dirroot . '//mod/newexternship/backup/moodle2/backup_newexternship_stepslib.php');
 
 /**
  * Provides all the settings and steps to perform a complete backup of mod_newexternship.
  */
-class backup_newexternship_activity_task extends backup_activity_task {
+class backup_newexternship_activity_task extends backup_activity_task
+{
 
     /**
      * Defines particular settings for the plugin.
      */
-    protected function define_my_settings() {
+    protected function define_my_settings()
+    {
         return;
     }
 
     /**
      * Defines particular steps for the backup process.
      */
-    protected function define_my_steps() {
+    protected function define_my_steps()
+    {
         $this->add_step(new backup_newexternship_activity_structure_step('newexternship_structure', 'newexternship.xml'));
     }
 
@@ -55,17 +58,18 @@ class backup_newexternship_activity_task extends backup_activity_task {
      * @param string $content
      * @return string
      */
-    public static function encode_content_links($content) {
+    public static function encode_content_links($content)
+    {
         global $CFG;
 
         $base = preg_quote($CFG->wwwroot, '/');
 
         // Link to the list of choices.
-        $search = "/(".$base."\//mod\/newexternship\/index.php\?id\=)([0-9]+)/";
+        $search = "/(" . $base . "\//mod\/newexternship\/index.php\?id\=)([0-9]+)/";
         $content = preg_replace($search, '$@NEWEXTERNSHIPINDEX*$2@$', $content);
 
         // Link to choice view by moduleid.
-        $search = "/(".$base."\//mod\/newexternship\/view.php\?id\=)([0-9]+)/";
+        $search = "/(" . $base . "\//mod\/newexternship\/view.php\?id\=)([0-9]+)/";
         $content = preg_replace($search, '$@NEWEXTERNSHIPVIEWBYID*$2@$', $content);
 
         return $content;

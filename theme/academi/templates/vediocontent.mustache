@@ -1,0 +1,100 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template theme_academi/vediocontent
+
+    Academi vediocontent template.
+
+    Context variables required for this template:
+    * sitename - The name of the site
+    * output - The core renderer for the page
+    * bodyattributes - attributes for the body tag as a string of html attributes
+    * sidepreblocks - HTML for the blocks
+    * hasblocks - true if there are blocks on this page
+    * courseindexopen - true if the nav drawer should be open on page load
+    * regionmainsettingsmenu - HTML for the region main settings menu
+    * hasregionmainsettingsmenu - There is a region main settings menu on this page.
+
+    Example context (json):
+ 
+}}
+
+        <!-- ***** Main Banner Area Start ***** -->
+        <section class="section main-banner" id="top" data-section="section1">
+            <video autoplay muted loop id="bg-video">
+                <source src="{{vediolink}}" type="video/mp4" />
+            </video>
+
+            <div class="video-overlay header-text">
+                <div class="caption">
+                    <h6>PakTaleem International </h6>
+                    <h2><em>Your</em> Classroom</h2>
+                    <div class="main-button">
+                        <div class="scroll-to-section"><a href="{{courselink}}">Discover more</a></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="features">
+          <div class="container">
+            <div class="row">
+              <div class="col-lg-4 col-12">
+                <div class="features-post">
+                  <div class="features-content">
+                    <div class="content-show">
+                      <h4><i class="fa fa-pencil"></i>All Courses</h4>
+                    </div>
+                    <div class="content-hide">
+                      <a href="{{courselink}}">{{coursename}}</a>
+                      <p>{{description}}</p>
+                      <div class="scroll-to-section"><a href="{{courselink}}">More Info.</a></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4 col-12">
+              <div class="features-post second-features">
+                <div class="features-content">
+                  <div class="content-show">
+                    <h4><i class="fa fa-graduation-cap"></i>Online Class</h4>
+                  </div>
+                  <div class="content-hide">
+                 
+                    <p class="">{{onlineclass}}</p>
+                    <div class="scroll-to-section"><a href="#section3">Details</a></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-12">
+            <div class="features-post third-features">
+              <div class="features-content">
+                <div class="content-show">
+                  <h4><i class="fa fa-book"></i>Real Meeting</h4>
+                </div>
+                <div class="content-hide">
+                  <p> {{realmeeting}}</p>
+                  
+                  <div class="scroll-to-section"><a href="#section4">Read More</a></div>
+              </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
