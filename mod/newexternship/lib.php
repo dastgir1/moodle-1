@@ -28,7 +28,8 @@
  * @param string $feature Constant representing the feature.
  * @return true | null True if the feature is supported, null otherwise.
  */
-function newexternship_supports($feature) {
+function newexternship_supports($feature)
+{
     switch ($feature) {
         case FEATURE_MOD_INTRO:
             return true;
@@ -50,7 +51,8 @@ function newexternship_supports($feature) {
  * @param mod_newexternship_mod_form $mform The form.
  * @return int The id of the newly inserted record.
  */
-function newexternship_add_instance($moduleinstance, $mform = null) {
+function newexternship_add_instance($moduleinstance, $mform = null)
+{
     global $DB;
 
     $moduleinstance->timecreated = time();
@@ -70,7 +72,8 @@ function newexternship_add_instance($moduleinstance, $mform = null) {
  * @param mod_newexternship_mod_form $mform The form.
  * @return bool True if successful, false otherwise.
  */
-function newexternship_update_instance($moduleinstance, $mform = null) {
+function newexternship_update_instance($moduleinstance, $mform = null)
+{
     global $DB;
 
     $moduleinstance->timemodified = time();
@@ -85,7 +88,8 @@ function newexternship_update_instance($moduleinstance, $mform = null) {
  * @param int $id Id of the module instance.
  * @return bool True if successful, false on failure.
  */
-function newexternship_delete_instance($id) {
+function newexternship_delete_instance($id)
+{
     global $DB;
 
     $exists = $DB->get_record('newexternship', array('id' => $id));

@@ -104,24 +104,15 @@ function externship_get_list($externship, $see_all, $editing = true)
 {
     global $OUTPUT, $DB, $USER;
     $coursemoduleid = required_param('id', PARAM_INT);
-
     $course_module = $DB->get_record('course_modules', ['id' => $coursemoduleid]);
-
     $externships = $DB->get_records('externship', ['course' => $course_module->course]);
-
-
     $first_row = true;
     $result = <<<EOD
     <table id="externship_list_table" cellpadding="5" rules="rows" frame="below">
-    <col width="50" />
-    
+    <col width="50" />   
     <input type="search" class="border rounded p-2" id="search" placeholder="Search here..."/>
-     
     EOD;
-
-
     $rows = $DB->get_records('externship_data', array('cmid' => $coursemoduleid), 'starttime DESC');
-
     if (empty($rows)) {
 
         echo "<div style=\"text-align:center\"><a class='btn btn-primary rounded float-right' href=\"externshipform.php?externshipid=$externship->id\">Add New Externship Entries</a></div>";
@@ -137,8 +128,6 @@ function externship_get_list($externship, $see_all, $editing = true)
         return $result;
     }
 }
-
-
 
 function externship_get_list_table_title($row, $editing)
 {
@@ -214,8 +203,6 @@ function externship_get_list_table_row($row, $editing)
             }
         }
     }
-
-
     // Loop through the row data
     foreach ($row as $name => $data) {
         if (in_array($name, array('id', 'externshipid'))) continue;
@@ -270,36 +257,27 @@ function externship_get_list_table_row($row, $editing)
         $result .= '<form action="add_comment.php?id=' . $row->id . '&cmid=' . $cmid . '" method="post">';
         $result .= "<textarea  name='comment' class='border rounded d-block my-2' placeholder='Enter comment' rows='1' cols='14'></textarea>";
         $result .= '<button type="submit" class="btn btn-primary rounded text-truncate" style="max-width: 150px;" name="submit" value="' . $row->id . '">Add Comment</button>';
-
         $result .= '</form>';
         $comment = $DB->get_record('externship_data', ['id' => $row->id]);
         $result .= '' . $comment->comments . '';
         $result .= "</td>\n";
     } else {
         $comment = $DB->get_record('externship_data', ['id' => $row->id]);
-
         $result .= "\t\t<td>";
         $result .= "<div id='showcomment' >$comment->comments</div>";
-
         $result .= "</td>\n";
     }
 
-
-
     global $CFG;
     require_once($CFG->libdir . '/filelib.php');
-
     $externship = $DB->get_record('externship', array('id' => $row->externshipid), '*', MUST_EXIST);
     $course         = $DB->get_record('course', array('id' => $externship->course), '*', MUST_EXIST);
     $course = new core_course_list_element($course);
-
     $cm             = get_coursemodule_from_instance('externship', $externship->id, $course->id, false, MUST_EXIST);
     $cm_context = context_module::instance($cm->id);
     $fs = get_file_storage();
     // $files = $fs->get_area_files($cm_context->id , 'mod_externship', 'file',$row->id);
     $files = $fs->get_area_files($cm_context->id, 'mod_externship', 'file', $row->id, 'sortorder DESC', false);
-
-
     $download_url = '';
     foreach ($files as $file) {
         // Check if the file is not the directory placeholder ('.').
@@ -318,8 +296,6 @@ function externship_get_list_table_row($row, $editing)
 
         }
     }
-
-
 
     $result .= "\t\t<td>";
     $extension = pathinfo($download_url, PATHINFO_EXTENSION); // Get the file extension
@@ -355,23 +331,12 @@ function externship_get_list_table_row($row, $editing)
         }
     }
     $result .= "</td>\n";
-
-
-
     // Close the table row
-
     $result .= "\t</tr>\n";
     // $result .= "\t</tbody>\n";
-
     return $result;
 }
 $content = externship_get_list($externship, $see_all);
-
 echo $OUTPUT->box($content, 'generalbox');
-
-
-
-
-
 // Finish the page
 echo $OUTPUT->footer();

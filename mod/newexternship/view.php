@@ -62,7 +62,7 @@ $PAGE->set_context($modulecontext);
 
 echo $OUTPUT->header();
 $addnewrecord = get_string('addnewrecord', 'newexternship');
-echo '<a href="/mod/newexternship/newexternshipform.php?newexternshipid=' . $moduleinstance->id . '" ><button type="submit" class="btn btn-primary">' . $addnewrecord . '</button></a>';
+echo '<a href="/mod/newexternship/newexternshipform.php?newexternshipid=' . $moduleinstance->id . '" class=""><button type="submit" class="btn btn-primary">' . $addnewrecord . '</button></a>';
 $coursemoduleid = required_param('id', PARAM_INT);
 // Get the course module ID
 
@@ -80,32 +80,32 @@ if ($isadmin) {
 }
 
 $table = '';
-if ($rows != '') {
-    $table .= '<div class="container-fluid">';
+if (!empty($rows)) {
+    $table .= '<div class="container-fliud">';
     $table .= '<div class="row">';
-    $table .= '<div class="col-md-12">';
-    $table .= '<div class="card">';
-    $table .= '<div class="card-heaser">';
+    $table .= '<div class="col">';
+    $table .= '<div class="">';
     $table .= '<h3 class="text-center">' . $moduleinstance->name . '</h3>';
+    $table .= '<div class="">';
     $table .= '</div>';
-    $table .= '<div class="crd-body">';
+    $table .= '<div class="card-body">';
     $table .= '<table class="table table-striped">';
     $table .= '<thead>';
     $table .= '
     <tr>
-        <th>Action</th>
-        <th>ID</th>
-        <th>User Name</th>
-        <th>Start Time</th>
-        <th>End Time</th>
-        <th>Duration</th>
-        <th>Descripion</th>
-        <th>Clinic Name</th>
-        <th>Preceptor Name</th>
-        <th>Status</th>
-        <th>Comments</th>
-        <th>File</th>
-        <th></th>
+        <th scope="row">Action</th>
+        <th scope="row">ID</th>
+        <th scope="row">User Name</th>
+        <th scope="row">Start Time</th>
+        <th scope="row">End Time</th>
+        <th scope="row">Duration</th>
+        <th scope="row">Descripion</th>
+        <th scope="row">Clinic Name</th>
+        <th scope="row">Preceptor Name</th>
+        <th scope="row">Status</th>
+        <th scope="row">Comments</th>
+        <th scope="row">File</th>
+        <th scope="row"></th>
     </tr>
     ';
     $table .= '</thead>';
@@ -119,8 +119,8 @@ if ($rows != '') {
 
         $durationminute   = intval((intval($row->duration) - $durationhour * 3600) / 60);
         $duration = $durationhour . ' Hours ' . $durationminute . ' Minutes';
-        $table .= '<tr>';
         $context = context_course::instance($course->id);
+        $table .= '<tr>';
         if (has_capability('mod/newexternship:canapproveentries', $context)) {
             $table .= "<td>";
 
@@ -131,14 +131,14 @@ if ($rows != '') {
         }
         $table .= '
     
-        <td>' . $row->id . '</td>
-        <td>' . $username . '</td>
-        <td>' . $starttime . '</td>
-        <td>' . $endtime . '</td>
-        <td>' . $duration . '</td>
-        <td>' . $row->description . '</td>
-        <td>' . $row->clinicname . '</td>
-        <td>' . $row->preceptorname . '</td>
+        <td >' . $row->id . '</td>
+        <td >' . $username . '</td>
+        <td >' . $starttime . '</td>
+        <td >' . $endtime . '</td>
+        <td >' . $duration . '</td>
+        <td >' . $row->description . '</td>
+        <td >' . $row->clinicname . '</td>
+        <td >' . $row->preceptorname . '</td>
         ';
         $table .= '<td>';
         if ($row->approval == 0) {
@@ -167,6 +167,7 @@ if ($rows != '') {
             $table .= "</td>";
         }
         $cm_context = context_module::instance($id);
+
         $fs = get_file_storage();
         $files = $fs->get_area_files($cm_context->id, 'mod_newexternship', 'file', $row->id);
         $file = end($files);

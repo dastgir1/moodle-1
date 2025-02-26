@@ -24,21 +24,23 @@ namespace mod_newexternship\form;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 // require_once("$CFG->libdir/formslib.php");
-class newexternshipform extends \moodleform{
-    public function definition(){
+class newexternshipform extends \moodleform
+{
+    public function definition()
+    {
         $mform = $this->_form;
-        global $CFG,$DB,$newexternship_data,$newexternshipid;
+        global $CFG, $DB, $newexternship_data, $newexternshipid;
         // Header
         $mform->addElement('header', 'newexternshipform', get_string('newexternshipform', 'newexternship'));
 
         $dataid = $this->_customdata['dataid'];
         $newexternshipid = $this->_customdata['newexternshipid'];
-      
+
         $mform->addElement('hidden', 'dataid', $dataid);
         $mform->setType('dataid', PARAM_INT);
         $mform->addElement('hidden', 'newexternshipid', $newexternshipid);
         $mform->setType('newexternshipid', PARAM_INT);
-      
+
 
         $now = getdate();
         $curryear = (int) $now['year'];
@@ -46,10 +48,10 @@ class newexternshipform extends \moodleform{
         for ($i = 1; $i <= 12; $months["$i"] = $i++);
         for ($i = $curryear - 5; $i <= $curryear + 5; $years["$i"] = $i++);
         for ($i = 0; $i <= 23; $hours["$i"] = $i++);
-        for ($i = 0; $i < 60; $i+= 5) $minutes["$i"] = sprintf("%02d", $i);
+        for ($i = 0; $i < 60; $i += 5) $minutes["$i"] = sprintf("%02d", $i);
 
         if ($dataid) {
-            
+
             $starttime_obj = getdate($newexternship_data->starttime);
             $endtime_obj = getdate($newexternship_data->endtime);
 
@@ -66,7 +68,7 @@ class newexternshipform extends \moodleform{
             // $newexternship_data->duration =$default_duration;
             $default_description      = $newexternship_data->description;
             if ($newexternship_data->cmid) $default_cmid = $newexternship_data->cmid;
-                else $default_cmid = '0';
+            else $default_cmid = '0';
         } else {
             $default_day   =  $now['mday'];
             $default_month =  $now['mon'];
@@ -81,25 +83,25 @@ class newexternshipform extends \moodleform{
             $default_cmid = '0';
         }
 
-        $mform->addElement('text', 'clinicname', get_string('clinicname', 'newexternship'));
+        $mform->addElement('text', 'clinicname', get_string('clinicname', 'newexternship'), ['placeholder' => 'Enter Clinic Name']);
         $mform->setType('clinicname', PARAM_NOTAGS);
         // $mform->setDefault('clinicname', 'Enter Clinic Name');
 
-        $mform->addElement('text', 'preceptorname', get_string('preceptorname', 'newexternship'));
+        $mform->addElement('text', 'preceptorname', get_string('preceptorname', 'newexternship'), ['placeholder' => 'Enter Preceptor Name']);
         $mform->setType('preceptorname', PARAM_NOTAGS);
         // $mform->setDefault('preceptorname', 'Enter Preceptor Name');
 
-        $stimearray=array();
-        $stimearray[]=& $mform->createElement('select', 'month', '', $months);
+        $stimearray = array();
+        $stimearray[] = &$mform->createElement('select', 'month', '', $months);
         $mform->setType('month', PARAM_INT);
         $mform->setDefault('month', $default_month);
-        $stimearray[]=& $mform->createElement('select', 'day', '', $days);
+        $stimearray[] = &$mform->createElement('select', 'day', '', $days);
         $mform->setDefault('day', $default_day);
         $mform->setType('day', PARAM_INT);
-        $stimearray[]=& $mform->createElement('select', 'year', '', $years);
+        $stimearray[] = &$mform->createElement('select', 'year', '', $years);
         $mform->setType('year', PARAM_INT);
         $mform->setDefault('year', $default_year);
-        $mform->addGroup( $stimearray,'timearr',get_string('date', 'newexternship') ,' ',false);
+        $mform->addGroup($stimearray, 'timearr', get_string('date', 'newexternship'), ' ', false);
 
         // Start time group
         $stimearray = array();
@@ -125,15 +127,15 @@ class newexternshipform extends \moodleform{
         $mform->setType('endminute', PARAM_INT);
 
         $mform->addGroup($etimearray, 'endtimearr', get_string('endtime', 'newexternship'), ' ', false);
-        $html = '<p id="custom-div-id"></p>';
+        $html = '<p id="custom-div-id" class="text-danger"></p>';
         $mform->addElement('html', $html);
 
-        $mform->addElement('text', 'duration', get_string('duration', 'newexternship'));
+        $mform->addElement('text', 'duration', get_string('duration', 'newexternship'), ['placeholder' => 'Duration']);
         $mform->setType('duration', PARAM_NOTAGS);
         $mform->setDefault('duration', '');
 
-    
-        $mform->addElement('textarea', 'description', get_string('description', 'newexternship'));
+
+        $mform->addElement('textarea', 'description', get_string('description', 'newexternship'), ['placeholder' => 'Enter Description']);
         $mform->setType('description', PARAM_RAW);
         $mform->setDefault('description', $default_description);
         // $maxbytes = get_max_upload_sizes();
@@ -148,43 +150,42 @@ class newexternshipform extends \moodleform{
                 'maxbytes' => 1048576,
                 'areamaxbytes' => 1048576,
                 'maxfiles' => 1,
-                'accepted_types' => ['.doc','.docx','.pdf','.jpg','.png'],
+                'accepted_types' => ['.doc', '.docx', '.pdf', '.jpg', '.png'],
                 // 'return_types' => FILE_INTERNAL | FILE_EXTERNAL,
             ]
         );
         $mform->addRule('file', get_string('required', 'newexternship'), 'required', null, 'client');
 
         $this->add_action_buttons();
-      
     }
 
     // * Custom validation function for form elements.
-    
-   public function validation($data, $files) {
-       $errors = parent::validation($data, $files);
-   
-       // Check that start time and end time are present in the form data
-       if (isset($data['starthour']) && isset($data['startminute']) && isset($data['endhour']) && isset($data['endminute'])) {   
-           // Retrieve start and end time data
-           $starthour = $data['starthour'];
-           $startminute = $data['startminute'];
-           $endhour = $data['endhour'];
-           $endminute = $data['endminute'];
-   
-           // Convert start and end times to minutes for easier comparison
-           $start_time_in_minutes = ($starthour * 60) + $startminute;
-           $end_time_in_minutes = ($endhour * 60) + $endminute;
-   
-           // Validate that end time is greater than start time
-           if ($end_time_in_minutes <= $start_time_in_minutes) {
-               $errors['endtimearr'] = get_string('error_endtime_greater', 'newexternship'); // Custom error message
-           }
-       } else {
-           // Handle missing time fields if necessary
-           $errors['endtimearr'] = get_string('error_missing_time_fields', 'newexternship');
-       }
-   
-       return $errors;
-   }
 
+    public function validation($data, $files)
+    {
+        $errors = parent::validation($data, $files);
+
+        // Check that start time and end time are present in the form data
+        if (isset($data['starthour']) && isset($data['startminute']) && isset($data['endhour']) && isset($data['endminute'])) {
+            // Retrieve start and end time data
+            $starthour = $data['starthour'];
+            $startminute = $data['startminute'];
+            $endhour = $data['endhour'];
+            $endminute = $data['endminute'];
+
+            // Convert start and end times to minutes for easier comparison
+            $start_time_in_minutes = ($starthour * 60) + $startminute;
+            $end_time_in_minutes = ($endhour * 60) + $endminute;
+
+            // Validate that end time is greater than start time
+            if ($end_time_in_minutes <= $start_time_in_minutes) {
+                $errors['endtimearr'] = get_string('error_endtime_greater', 'newexternship'); // Custom error message
+            }
+        } else {
+            // Handle missing time fields if necessary
+            $errors['endtimearr'] = get_string('error_missing_time_fields', 'newexternship');
+        }
+
+        return $errors;
+    }
 }

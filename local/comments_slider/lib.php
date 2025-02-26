@@ -15,11 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Form for editing our teacher  instances.
- * @copyright  2024  {@link http://paktaleem.com}
- * @package  local_ourteacher
- * @author    paktaleem
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Callback implementations for local_comments_slider
+ *
+ * @package    local_comments_slider
+ * @copyright  2025 ghulam.dastgir@paktaleem.net
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 /**
  * Serve the files from the myplugin file areas.
@@ -33,7 +33,7 @@
  * @param array $options additional options affecting the file serving
  * @return bool false if the file not found, just send the file otherwise and do not return anything
  */
-function local_ourteacher_pluginfile(
+function local_comments_slider_pluginfile(
     $course,
     $cm,
     $context,
@@ -61,7 +61,7 @@ function local_ourteacher_pluginfile(
     // Retrieve the file from the Files API.
     $fs = get_file_storage();
 
-    $file = $fs->get_file($context->id, 'local_ourteacher', $filearea, $itemid, $filepath, $filename);
+    $file = $fs->get_file($context->id, 'local_comments_slider', $filearea, $itemid, $filepath, $filename);
     if (!$file) {
         // The file does not exist.
         return false;
@@ -70,57 +70,48 @@ function local_ourteacher_pluginfile(
     // We can now send the file back to the browser - in this case with a cache lifetime of 1 day and no filtering.
     send_stored_file($file);
 }
-
-// Function to retrieve teacher records from the Moodle database
+// Function to retrieve Comments records from the Moodle database
 /**
- * [Description for getTeacherRecords]
- * @package  local_ourteacher
+ * [Description for getCommentsRecords]
+ * @package  local_comments_slider
  * @return [type]
  * 
  */
 
-function getTeacherRecords()
+function getCommentsRecords()
 {
-    global $DB, $CFG;
+    global $DB, $CFG, $OUTPUT;
 
     $result = $DB->get_records_sql("
-        SELECT t.userid, t.qualification, t.userpic, u.firstname, u.lastname, e.courseid
-        FROM {teachers} t
-        JOIN {user} u ON t.userid = u.id
-        JOIN {user_enrolments} ue ON ue.userid = t.userid AND ue.status = 0
-        JOIN {enrol} e ON e.id = ue.enrolid
+        SELECT c.id AS i, c.content AS comment_content,
+                u.id, u.firstname, u.lastname,ra.roleid
+           FROM {comments} c
+           JOIN {user} u ON c.userid = u.id
+           JOIN {role_assignments} ra ON c.userid = ra.userid AND c.contextid=ra.contextid
        
     ");
 
-    $teachersdata = array();
+    $commentsdata = array();
 
     // Generate the User profile pic URL.
     foreach ($result as $r) {
 
-        $fs = get_file_storage();
-        $context = context_user::instance($r->userid);
-        $files = $fs->get_area_files($context->id, 'user', 'icon', '/', 0, $r->userpic);
-        $file = end($files);
+        $userrole = $DB->get_record_sql(
+            "SELECT r.shortname
+                   FROM {role} r
+                   WHERE r.id=$r->roleid;
+                   
+                   
+            "
+        );
+        $r->role = $userrole->shortname;
+        // Get user picture.
+        $r->picture = $OUTPUT->user_picture(core_user::get_user($r->id));
 
-        if ($file) {
-            // Creating picture URL.
-            $r->picurl = moodle_url::make_pluginfile_url(
-                $file->get_contextid(),
-                $file->get_component(),
-                $file->get_filearea(),
-                $file->get_itemid(),
-                $file->get_filepath(),
-                $file->get_filename(),
-                false
-            )->out();
-        } else {
-            // Default picture URL or handle missing picture.
-            $r->picurl = $CFG->wwwroot . '/pix/u/f1.png';
-        }
 
-        $r->link = $CFG->wwwroot . '/course/info.php?id=' . $r->courseid;
-        $teachersdata[] = $r;
+
+        $commentsdata[] = $r;
     }
 
-    return $teachersdata;
+    return $OUTPUT->render_from_template('local_comments_slider/comments_slider', ['commentsdata' => array_values($commentsdata)]);
 }
