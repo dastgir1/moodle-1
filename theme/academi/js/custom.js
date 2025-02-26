@@ -53,3 +53,9 @@
     }
   }
 }
+ document.addEventListener("DOMContentLoaded", function() {
+        var carousel = new bootstrap.Carousel(document.getElementById("carouselExampleControls"), {
+            interval: 3000, // Auto-slide every 3 seconds
+            wrap: true
+        });
+    });

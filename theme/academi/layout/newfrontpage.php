@@ -57,7 +57,7 @@ $templatecontext += [
     'categoryslist' => $categoryslist,
     'courses' => $courseslist,
     'teacherlist' => $teacherlist,
-    'comments' => theme_klass_getRecordsWithCustomQuery(),
+    'comments' => get_comments(),
 ];
 
 echo $OUTPUT->render_from_template('theme_academi/newfrontpage', $templatecontext);

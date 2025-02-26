@@ -351,179 +351,178 @@ function teacherlist()
     }
     return $OUTPUT->render_from_template('theme_academi/teacherlist', ['teacherdata' => array_values($teacherdata)]);
 }
-// function get_comments()
-// {
-//     global $DB, $OUTPUT;
-//     $allcomments = $DB->get_records_sql("
-//     SELECT 
-//         c.id AS commentid, 
-//         c.content AS comment_content, 
-//         u.id AS userid, 
-//         u.firstname, 
-//         u.lastname, 
-//         ra.roleid,
-//         u.picture
-//     FROM {comments} c
-//     JOIN {user} u ON c.userid = u.id
-//     JOIN {role_assignments} ra ON c.userid = ra.userid AND c.contextid=ra.contextid
-// ");
-//     $combinedArray = [];
-//     $tempArray = [];
-//     $counter = 0;
-
-//     foreach ($allcomments as $record) {
-//         // Fetch user details and role assignments.
-//         $user = $DB->get_record('user', ['id' => $record->userid]);
-
-//         $userrole = $DB->get_record('role', ['id' => $record->roleid]);
-
-//         // Prepare individual slide data.
-//         $tempArray[] = [
-//             'userid' => $record->userid,
-//             'comment_content' => $record->comment_content,
-//             'firstname' => $record->firstname,
-//             'lastname' => $record->lastname,
-//             'picture' => $OUTPUT->user_picture($user, ['size' => 100]),
-//             'role' => $userrole->shortname ?? 'No role',
-//         ];
-
-//         $counter++;
-
-//         // When we have 3 records, add to the combined array and reset.
-//         if ($counter == 3) {
-//             $combinedArray[] = ['users' => $tempArray];
-//             $tempArray = [];
-//             $counter = 0;
-//         }
-//     }
-
-//     // Add remaining records if any.
-//     if (!empty($tempArray)) {
-//         $combinedArray[] = ['users' => $tempArray];
-//     }
-
-//     // Prepare data for rendering.
-//     return $OUTPUT->render_from_template('theme_academi/comments', ['slides' => $combinedArray]);
-// }
-// Function to get records with custom query
-function theme_klass_getRecordsWithCustomQuery() {
+function get_comments()
+{
     global $DB, $OUTPUT;
+    $allcomments = $DB->get_records_sql("
+        SELECT 
+            c.id AS commentid, 
+            c.content AS comment_content, 
+            u.id AS userid, 
+            u.firstname, 
+            u.lastname, 
+            ra.roleid,
+            u.picture
+        FROM {comments} c
+        JOIN {user} u ON c.userid = u.id
+        JOIN {role_assignments} ra ON c.userid = ra.userid AND c.contextid=ra.contextid
+    ");
+    $combinedArray = [];
+    $tempArray = [];
+    $counter = 0;
+    $firstSlide = true;
+    foreach ($allcomments as $record) {
+        // Fetch user details and role assignments.
+        $user = $DB->get_record('user', ['id' => $record->userid]);
 
-    $output = '
-        <div class="container-fluid  my-5 py-4" style="background-color: #54a5dc;">
-            <div class="container  ">
-                <div class="text-center">
-                    <h5 class="section-title  text-center text-white font-weight-bold px-3">
-                        Testimonials
-                    </h5>
-                    <h1 class="mb-5 text-white">
-                        What Our Students Say!
-                    </h1>
-                </div>
-                
-                <div class="carousel slide"  data-ride="carousel">
-                    <div class="carousel-inner">'
-    ;
+        $userrole = $DB->get_record('role', ['id' => $record->roleid]);
 
-    $records = $DB->get_records_sql(
-        "SELECT c.id AS i, c.content AS comment_content,
-                u.id, u.firstname, u.lastname,ra.roleid
-           FROM {comments} c
-           JOIN {user} u ON c.userid = u.id
-           JOIN {role_assignments} ra ON c.userid = ra.userid AND c.contextid=ra.contextid
-        "
-    );
+        // Prepare individual slide data.
+        $tempArray[] = [
+            'userid' => $record->userid,
+            'comment_content' => $record->comment_content,
+            'firstname' => $record->firstname,
+            'lastname' => $record->lastname,
+            'picture' => $OUTPUT->user_picture($user, ['size' => 100]),
+            'role' => $userrole->shortname ?? 'No role',
+        ];
 
-    // Fetch the records
-    if (!empty($records)) {
+        $counter++;
 
-        $firstrecord = array_key_first($records);
-        $lastrecord = array_key_last($records);
-        $i = 1;
-        $active = ' active';
-        $item = '';
-        $items = '';
-        foreach($records as $record) {
-            $userrole= $DB->get_record_sql(
-                "SELECT r.shortname
-                   FROM {role} r
-                   WHERE r.id=$record->roleid;
-                   
-                   
-            ");
-           $record->role=$userrole->shortname;
-            // Get user picture.
-            $picture = $OUTPUT->user_picture(core_user::get_user($record->id));
-
-            // Collect 3 records.
-            $item .= '
-                        
-                        <div class="col-sm-4">
-								<div class="card shadow " style="
-                                    padding-top: 20px;
-                                    margin-bottom: 50px;
-                                    border-top-left-radius: 80px;
-                                    border-bottom-right-radius: 80px;
-                                    background-color: #917cee;
-                                    color: #fff;
-                                ">
-                                    <center>'.$picture.'</center>
-									<div class="card-body">
-										
-										<h5 class="overview card-title text-center text-white" >'.$record->firstname. $record->lastname.'</h5>
-										<p class="text-center "><b>'.$record->role.'</b> </p>
-										<p class="card-text">'.$record->comment_content.'</p>
-										
-									</div>
-								</div>
-							</div>
-            ';
-
-            // Reseting the i to get the three values.
-            if ($i > 3) {
-                $i = 1;
-            }
-
-            // Check if we have three records.
-            // then Put all the records in the items and reset it.
-            if ($i == 3) {
-                $items = $item;
-                $item = ''; // Reset
-            }
-
-            if ($items != '') {                
-                $output .= '
-                    <div class="carousel-item' .$active.'">
-                        <div class="row">'
-                            .$items.
-                        '</div>
-                    </div>'
-                ;
-
-                $active = ''; // Unset the active variable.
-
-                $items = ''; // Reset items.
-            } else if ($lastrecord == $record->i) { // If this is the last record.
-                $output .= '
-                    <div class="carousel-item">
-                        <div class="row">'
-                            .$item.
-                        '</div>
-                    </div>'
-                ;
-            }
-
-            $i++;
+        // When we have 3 records, add to the combined array and reset.
+        if ($counter == 3) {
+            $combinedArray[] = ['users' => $tempArray, 'isFirst' => $firstSlide];
+            $tempArray = [];
+            $counter = 0;
+            $firstSlide = false;
         }
     }
 
-    $output .= '
-                    </div>
-                </div>
-            </div>
+    // If there are remaining users, add them as the last slide.
+    if (!empty($tempArray)) {
+        $combinedArray[] = ['users' => $tempArray, 'isFirst' => $firstSlide];
+    }
 
-        </div>'
-    ;
-
-    return $output;
+    // Prepare data for rendering.
+    return $OUTPUT->render_from_template('theme_academi/comments', ['slides' => $combinedArray]);
 }
+// Function to get records with custom query
+// function theme_academi_getRecordsWithCustomQuery()
+// {
+//     global $DB, $OUTPUT;
+
+//     $output = '
+//         <div class="container-fluid  my-5 py-4" style="background-color: #54a5dc;">
+//             <div class="container  ">
+//                 <div class="text-center">
+//                     <h5 class="section-title  text-center text-white font-weight-bold px-3">
+//                         Testimonials
+//                     </h5>
+//                     <h1 class="mb-5 text-white">
+//                         What Our Students Say!
+//                     </h1>
+//                 </div>
+
+//                 <div id="carouselExampleControls" class="carousel carousel-dark slide" data-bs-ride="carousel">
+//                     <div class="carousel-inner">';
+
+//     $records = $DB->get_records_sql(
+//         "SELECT c.id AS i, c.content AS comment_content,
+//                 u.id, u.firstname, u.lastname,ra.roleid
+//            FROM {comments} c
+//            JOIN {user} u ON c.userid = u.id
+//            JOIN {role_assignments} ra ON c.userid = ra.userid AND c.contextid=ra.contextid
+//         "
+//     );
+
+//     // Fetch the records
+//     if (!empty($records)) {
+
+//         $firstrecord = array_key_first($records);
+//         $lastrecord = array_key_last($records);
+//         $i = 1;
+//         $active = 'active';
+//         $item = '';
+//         $items = '';
+//         foreach ($records as $record) {
+//             $userrole = $DB->get_record_sql(
+//                 "SELECT r.shortname
+//                    FROM {role} r
+//                    WHERE r.id=$record->roleid;
+
+
+//             "
+//             );
+//             $record->role = $userrole->shortname;
+//             // Get user picture.
+//             $picture = $OUTPUT->user_picture(core_user::get_user($record->id));
+
+//             // Collect 3 records.
+//             $item .= '
+
+//                         <div class="col-sm-4">
+//                             <div class="card shadow " style="
+//                                 padding-top: 20px;
+//                                 margin-bottom: 50px;
+//                                 border-top-left-radius: 80px;
+//                                 border-bottom-right-radius: 80px;
+//                                 background-color: #917cee;
+//                                 color: #fff;
+//                             ">
+//                                 <center>' . $picture . '</center>
+//                                 <div class="card-body">
+
+//                                     <h5 class="overview card-title text-center text-white" >' . $record->firstname . $record->lastname . '</h5>
+//                                     <p class="text-center "><b>' . $record->role . '</b> </p>
+//                                     <p class="card-text">' . $record->comment_content . '</p>
+
+//                                 </div>
+//                             </div>
+// 						</div>
+//             ';
+
+//             // Reseting the i to get the three values.
+//             if ($i > 3) {
+//                 $i = 1;
+//             }
+
+//             // Check if we have three records.
+//             // then Put all the records in the items and reset it.
+//             if ($i == 3) {
+//                 $items = $item;
+//                 $item = ''; // Reset
+//             }
+
+//             if ($items != '') {
+//                 $output .= '
+//                     <div class="carousel-item' . ' ' . $active . '">
+//                         <div class="row">'
+//                     . $items .
+//                     '</div>
+//                     </div>';
+
+//                 $active = ''; // Unset the active variable.
+
+//                 $items = ''; // Reset items.
+//             } else if ($lastrecord == $record->i) { // If this is the last record.
+//                 $output .= '
+//                     <div class="carousel-item">
+//                         <div class="row">'
+//                     . $item .
+//                     '</div>
+//                     </div>';
+//             }
+
+//             $i++;
+//         }
+//     }
+
+//     $output .= '
+//                     </div>
+//                 </div>
+//             </div>
+
+//         </div>';
+
+//     return $output;
+// }

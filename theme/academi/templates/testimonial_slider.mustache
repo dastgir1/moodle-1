@@ -1,0 +1,85 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template theme_academi/testimonial_slider
+
+    TODO describe template testimonial_slider
+
+    Example context (json):
+    {
+    }
+}}
+<div class="container-fluid my-5 py-4" style="background-color: #54a5dc;">
+    <div class="container">
+        <div class="text-center">
+            <h5 class="section-title text-center text-white font-weight-bold px-3">
+                Testimonials
+            </h5>
+            <h1 class="mb-5 text-white">
+                What Our Students Say!
+            </h1>
+        </div>
+        <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
+            <!-- Carousel indicators -->
+            <ol class="carousel-indicators">
+                {{#slides}}
+                    <li data-bs-target="#myCarousel" data-bs-slide-to="{{index}}" class="{{#isFirst}}active{{/isFirst}}"></li>
+                {{/slides}}
+            </ol>
+            <!-- Wrapper for carousel items -->
+            <div class="carousel-inner">
+                {{#slides}}
+                    <div class="carousel-item {{#isFirst}}active{{/isFirst}}">
+                        <div class="row">
+                            {{#users}}
+                                <div class="col-sm-4">
+                                    <div class="card shadow" style="
+                                        padding-top: 20px;
+                                        margin-bottom: 50px;
+                                        border-top-left-radius: 80px;
+                                        border-bottom-right-radius: 80px;
+                                        background-color: #917cee;
+                                        color: #fff;
+                                    ">
+                                        <center>{{{picture}}}</center>
+                                        <div class="card-body">
+                                            <h5 class="overview card-title text-center text-white">{{firstname}} {{lastname}}</h5>
+                                            <p class="text-center"><b>{{role}}</b></p>
+                                            <p class="card-text">{{comment_content}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            {{/users}}
+                        </div>
+                    </div>
+                {{/slides}}
+            </div>
+            <a href="#myCarousel" class="carousel-control-prev" data-bs-target="#myCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </a>
+            <a href="#myCarousel" class="carousel-control-next" data-bs-target="#myCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </a>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelector(".carousel-item").classList.add("active");
+        document.querySelector(".carousel-indicators li").classList.add("active");
+    });
+</script>

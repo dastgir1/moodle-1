@@ -573,7 +573,7 @@ class course_renderer extends \core_course_renderer
             if (!empty($enroles->cost)) {
                 $course->cost = $enroles->cost;
             } else {
-                $course->cost = '';
+                $course->cost = 0;
             }
 
             if (is_siteadmin()) {
@@ -595,14 +595,15 @@ class course_renderer extends \core_course_renderer
             $context = context_course::instance($course->id);
 
             // Get enrolled users with the "editingteacher" role
-            $teachers = get_role_users(4, $context);
+            $teachers = get_role_users(3, $context);
+
             foreach ($teachers as $teacher);
             $fullname = $teacher->firstname . ' ' . $teacher->lastname;
 
             $course->noofstudent = $count;
             $course->teacher = $fullname;
             $course->startdate = date('m/d/Y', $course->startdate);
-            $course->currency = $enroles->currency;
+
             $data[] = $course;
         }
         return $this->render_from_template('theme_academi/courses', ['courses' => $data]);
